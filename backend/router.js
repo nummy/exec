@@ -13,7 +13,7 @@ router.get('/users', function (req, res) {
 		params = query;
 	}
 	User.find(query, function(err, doc) { 
-        res.json(doc); 
+        res.json({"users":doc}); 
     }); 
 });
 
@@ -61,29 +61,70 @@ router.get('/user', function(req, res){
 });
 
 router.put('/user', function(req, res){
-	res.send("put user");
+	var id = req.query.id;
+	var data = req.body;
+	try{
+		var sid = mongoose.Types.ObjectId(id); 
+		User.update({_id:sid}, function(err, user){
+			if(err){
+				res.sendStatus(404);
+			}else{
+				if(user){
+					var new_user = User({
+						_id:sid,
+						username:user.username,
+						fullname:data.fullname||user.fullname,
+						lastname:data.lastname||user.lastname,
+						sex:data.sex||user.sex,
+						age:data.age||data.age
+					});
+					new_user.save();
+					res.json(new_user);
+				}else{
+					res.sendStatus(404);
+				}
+			}
+		});
+	}catch(e){
+		res.sendStatus(404);
+	}
 });
 
 router.post('/user', function(req, res){
-	var user = new User({ 
-        "username": "m1ssionP0zzible",
-        "firstname":"Tom",
-        "lastname":"Cruise",
-        "sex": "M",
-        "age": 54
-    }); 
-    user.save(); 
-	res.send('post user');
+	var data = req.body;
+	var username = data.username;
+	if(username){
+		var user = User(data);
+		user.save(function(err, u){
+			if(err){
+				res.sendStatus(403);
+			}else{
+				res.json(u);
+			}
+		});
+	}else{
+		res.sendStatus(403);
+	}
 });
 
 router.delete('/user', function(req, res){
 	var id = req.query.id;
 	if(id){
-
+		try{
+			var sid = mongoose.Types.ObjectId(id); 
+			User.remove({_id:sid}, function(err, user){
+				if(err){
+					res.sendStatus(404);
+				}else{
+					res.json("ok")
+				}
+			});
+		}catch(e){
+			res.sendStatus(404);
+		}
 	}else{
-
+		res.sendStatus(404);
 	}
-	res.send('delete user');
 });
 
 module.exports = router;
