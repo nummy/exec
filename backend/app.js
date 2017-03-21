@@ -1,25 +1,10 @@
 var express = require('express');
+var router = require('./router');
+var bodyParser = require("body-parser");
+
 var app = express();
-var mongoose = require('mongoose');
-var models = require('./models');
-
-mongoose.connect("MongoDB://localhost/demo");
-
-app.get('/users', function (req, res) {
-  res.send('Hello World!');
-});
-
-app.put('/user', function(req, res){
-	res.send("put user");
-});
-
-app.post('/user', function(req, res){
-	res.send('post user');
-});
-
-app.delete('/user', function(req, res){
-	res.send('delete user');
-});
+app.use(bodyParser.json());
+app.use(router);
 
 var server = app.listen(3000, function () {
   var host = server.address().address;
