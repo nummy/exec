@@ -17,8 +17,8 @@ var Store = new Schema({
 
 var Review = new Schema({
 	userId:{type:String,required:true, unique:true},
-	storeId:{type:String,default:""},
-	rate:{type:Number,default:0},
+	storeId:{type:String,default:"",required:true},
+	rate:{type:Number,default:0,required:true},
 	comment:{type:String,default:""}
 });
 

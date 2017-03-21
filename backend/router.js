@@ -219,5 +219,122 @@ router.post('/store', function(req, res){
 	}
 });
 
+/*route for review*/
+router.get('/review', function (req, res) {
+	var id = req.query.id;
+	var storeId = req.query.storeid;
+	var userId = req.query.userId;
+	if(id){
+		try{
+			var sid = mongoose.Types.ObjectId(id); 
+			Review.findOne({id:sid}, function(err, doc) { 
+        		if(err){
+        			res.sendStatus(404);
+        		}
+        		res.json(doc); 
+    		}); 
+		}catch(e){
+			res.sendStatus(404);
+		}
+	}
+
+	if(storeId){ 
+		Review.find({storeId:storeId}, function(err, doc) { 
+        	if(err){
+        		res.sendStatus(404);
+        	}
+        	res.json({"reviews":doc}); 
+    	}); 
+	}
+
+	if(userId){ 
+		Review.find({userId:userId}, function(err, doc) { 
+        	if(err){
+        		res.sendStatus(404);
+        	}
+        	res.json({"reviews":doc}); 
+    	}); 
+	}
+	return res.json({"reviews":[]});
+});
+
+
+router.put('/review', function(req, res){
+	var id = req.query.id;
+	var data = req.body;
+	delete data.storeId;
+	delete data.userId;
+	try{
+		var sid = mongoose.Types.ObjectId(id); 
+		Review.update({_id:sid}, data, function(err, store){
+			if(err){
+				res.sendStatus(404);
+			}else{
+				res.json(store);
+			}
+		});
+	}catch(e){
+		res.sendStatus(404);
+	}
+});
+
+router.delete('/review', function(req, res){
+	var id = req.query.id;
+	var storeId = req.query.storeId;
+	var userId = req.query.userId;
+	if(id){
+		try{
+			var sid = mongoose.Types.ObjectId(id); 
+			Review.remove({_id:sid}, function(err, store){
+				if(err){
+					res.sendStatus(404);
+				}else{
+					res.json("deleted")
+				}
+			});
+		}catch(e){
+			res.sendStatus(404);
+		}
+	}
+	if(storeId){
+		Review.remove({storeId:storeId}, function(err, store){
+			if(err){
+				res.sendStatus(404);
+			}else{
+				res.json("deleted")
+			}
+		});
+	}
+	if(userId){
+		Review.remove({userId:userId}, function(err, store){
+			if(err){
+				res.sendStatus(404);
+			}else{
+				res.json("deleted")
+			}
+		});
+	}
+	res.sendStatus(404);
+});
+
+router.post('/review', function(req, res){
+	var data = req.body;
+	var userId = data.userId;
+	var storeId = data.storeId;
+	var rate = parseInt(data.rate);
+	if(storeId && userId && rate >=0 && rate<=10){
+		var Review = Review(data);
+		Review.save(function(err, s){
+			if(err){
+				res.sendStatus(403);
+			}else{
+				res.json(s);
+			}
+		});
+	}else{
+		res.sendStatus(403);
+	}
+});
+
 
 module.exports = router;
