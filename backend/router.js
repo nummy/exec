@@ -20,18 +20,47 @@ router.get('/users', function (req, res) {
 router.get('/user', function(req, res){
 	var id = req.query.id;
 	var username = req.query.username;
-	User.find({id:id}, function(err, doc) { 
-        res.json(doc); 
-    }); 
+	if(id || username){
+		if(id){
+			try{
+				var sid = mongoose.Types.ObjectId(id); 
+				User.findOne({_id:sid}, function(err, user){
+					if(err){
+						res.sendStatus(404);
+					}else{
+						if(user){
+							res.json(user);
+						}else{
+							res.sendStatus(404);
+						}
+					}
+				});
+			}catch(e){
+				res.sendStatus(404);
+			}
+		
+		}
+		if(username){
+			User.findOne({username:username}, function(err, user){
+				if(err){
+					res.sendStatus(404);
+				}else{
+					if(user){
+						res.json(user);
+					}else{
+						res.sendStatus(404);
+					}
+					
+				}
+			});
+		}
+	}else{
+		res.sendStatus(404);
+	}
+	
 });
 
 router.put('/user', function(req, res){
-	var id = req.query.id;
-	if(id){
-
-	}else{
-		
-	}
 	res.send("put user");
 });
 
