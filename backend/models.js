@@ -9,4 +9,19 @@ var User = new Schema({
 	age:{type: Number, default: 0}
 });
 
+var Store = new Schema({
+	storename:{type:String,required:true},
+	catetory:{type:String,default:""},
+	Address:{type:String,default:""},
+});
+
+var Review = new Schema({
+	userId:{type:String,required:true, unique:true},
+	storeId:{type:String,default:""},
+	rate:{type:Number,default:0},
+	comment:{type:String,default:""}
+});
+
 exports.User = mongoose.model('User', User);
+exports.Store = mongoose.model('Store', Store);
+exports.Review = mongoose.model('Review', Review);

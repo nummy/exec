@@ -3,6 +3,8 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var models = require('./models');
 var User = models.User;
+var Store = models.Store;
+var Review = models.Review;
 
 mongoose.connect("mongodb://localhost/demo");
 
@@ -126,5 +128,96 @@ router.delete('/user', function(req, res){
 		res.sendStatus(404);
 	}
 });
+
+/*router for store*/
+router.get('/stores', function (req, res) {
+	var query = req.query;
+	var params = {};
+	if(query){
+		params = query;
+	}
+	Store.find(query, function(err, doc) { 
+        res.json({"stores":doc}); 
+    }); 
+});
+
+router.get('/store', function(req, res){
+	var id = req.query.id;
+	if(id){
+		try{
+			var sid = mongoose.Types.ObjectId(id); 
+			Store.findOne({_id:sid}, function(err, store){
+				if(err){
+					res.sendStatus(404);
+				}else{
+					if(user){
+						res.json(store);
+					}else{
+						res.sendStatus(404);
+					}
+				}
+			});
+		}catch(e){
+			res.sendStatus(404);
+		}
+	}else{
+		res.sendStatus(404);
+	}
+});
+
+router.put('/store', function(req, res){
+	var id = req.query.id;
+	var data = req.body;
+	try{
+		var sid = mongoose.Types.ObjectId(id); 
+		Store.update({_id:sid}, data, function(err, store){
+			if(err){
+				res.sendStatus(404);
+			}else{
+				res.json(store);
+			}
+		});
+	}catch(e){
+		res.sendStatus(404);
+	}
+});
+
+router.delete('/store', function(req, res){
+	var id = req.query.id;
+	if(id){
+		try{
+			var sid = mongoose.Types.ObjectId(id); 
+			Store.remove({_id:sid}, function(err, store){
+				if(err){
+					res.sendStatus(404);
+				}else{
+					res.json("deleted")
+				}
+			});
+		}catch(e){
+			res.sendStatus(404);
+		}
+	}else{
+		res.sendStatus(404);
+	}
+});
+
+router.post('/store', function(req, res){
+	var data = req.body;
+	var storename = data.storename;
+	if(storename){
+		var store = Store(data);
+		store.save(function(err, s){
+			if(err){
+				res.sendStatus(403);
+			}else{
+				res.json(s);
+			}
+		});
+	}else{
+		res.sendStatus(403);
+	}
+});
+
 
 module.exports = router;
