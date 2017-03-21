@@ -1,5 +1,9 @@
 var express = require('express');
 var app = express();
+var mongoose = require('mongoose');
+var models = require('./models');
+
+mongoose.connect("MongoDB://localhost/demo");
 
 app.get('/users', function (req, res) {
   res.send('Hello World!');
