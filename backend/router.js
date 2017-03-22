@@ -65,26 +65,16 @@ router.get('/user', function(req, res){
 router.put('/user', function(req, res){
 	var id = req.query.id;
 	var data = req.body;
+	delete data.username;
+	delete data.firstname;
+	delete data.lastname;
 	try{
 		var sid = mongoose.Types.ObjectId(id); 
-		User.update({_id:sid}, function(err, user){
+		User.update({_id:sid},data, function(err, user){
 			if(err){
 				res.sendStatus(404);
 			}else{
-				if(user){
-					var new_user = User({
-						_id:sid,
-						username:user.username,
-						fullname:data.fullname||user.fullname,
-						lastname:data.lastname||user.lastname,
-						sex:data.sex||user.sex,
-						age:data.age||data.age
-					});
-					new_user.save();
-					res.json(new_user);
-				}else{
-					res.sendStatus(404);
-				}
+				res.json(user);
 			}
 		});
 	}catch(e){
