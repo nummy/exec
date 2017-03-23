@@ -12,7 +12,7 @@ var User = new Schema({
 var Store = new Schema({
 	storename:{type:String,required:true},
 	catetory:{type:String,default:""},
-	Address:{type:String,default:""},
+	address:{type:String,default:""},
 });
 
 var Review = new Schema({
