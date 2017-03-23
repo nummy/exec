@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="./static/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./static/style.css">
+</head>
+<body>
+	<nav class="navbar navbar-inverse" role="navigation">
+    	<div class="container-fluid">
+    	<div class="navbar-header">
+    	    <a class="navbar-brand" href="#">Exec</a>
+    	</div>
+    	<div>
+    	    <ul class="nav navbar-nav">
+    	        <li class="active"><a href="index.html">User</a></li>
+    	        <li><a href="store.html">Store</a></li>
+    	        <li><a href="#">Review</a></li>
+    	    </ul>
+    	</div>
+    	</div>
+	</nav>
+	<div class="content" id="app">
+		<h3>Review</h3>
+		<hr>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>id</th>
+					<th>storeID</th>
+					<th>userID</th>
+          <th>rate</th>
+					<th>comment</th>
+          <th>operation</th>
+				</tr>
+			</thead>
+			<tbody id="data">
+			</tbody>
+		</table>
+    </div>
+	<script src="//cdn.bootcss.com/jquery/1.12.2/jquery.min.js"></script>
+	<script src="./static/bootstrap/js/bootstrap.min.js"></script>
+	<script src="./static/review.js"></script>
+</body>
+</html>
