@@ -28,27 +28,34 @@ $(function(){
 
 	$(document).on("click", "a.btn-edit", function(){
 		var id = $(this).data("id");
+		$("#title").text("Edit User");
 		editUser(id);
 	})
 
 	function initTable(users){
 		var $data = $("#data");
 		for(var i=0; i<users.length; i++){
-			var $tr = $("<tr>");
-			$tr.append($("<td>").text(users[i]._id));
-			$tr.append($("<td>").text(users[i].username));
-			$tr.append($("<td>").text(users[i].firstname));
-			$tr.append($("<td>").text(users[i].lastname));
-			$tr.append($("<td>").text(users[i].sex));
-			$tr.append($("<td>").text(users[i].age));
-			var $td = $("<td>");
-			var $button = $("<a class='btn btn-sm btn-edit' data-id='" + users[i]._id + "'>edit</a>");
-			$td.append($button);
-			$button = $("<a class='btn btn-sm btn-delete' data-id='" + users[i]._id + "'>delete</a>");
-			$td.append($button);
-			$tr.append($td);
-			$data.append($tr);
+			addUserToTable(users[i]);
 		}	
+	}
+
+	function addUserToTable(user){
+		var $data = $("#data");
+		var $tr = $("<tr>");
+		$tr.append($("<td>").text(user._id));
+		var $a = $("<a>").attr("href","/review.html?userid="+user._id).text(user.username);
+		$tr.append($("<td>").append($a));
+		$tr.append($("<td>").text(user.firstname));
+		$tr.append($("<td>").text(user.lastname));
+		$tr.append($("<td>").text(user.sex));
+		$tr.append($("<td>").text(user.age));
+		var $td = $("<td>");
+		var $button = $("<a class='btn btn-sm btn-edit' data-id='" + user._id + "'>edit</a>");
+		$td.append($button);
+		$button = $("<a class='btn btn-sm btn-delete' data-id='" + user._id + "'>delete</a>");
+		$td.append($button);
+		$tr.append($td);
+		$data.append($tr);
 	}
 
 	function addUser(){
@@ -68,8 +75,11 @@ $(function(){
 			type:"post",
 			data:JSON.stringify(data),
 			contentType:"application/json",
-			success: function(res){
-				console.log(res);
+			success: function(res, status){
+				addUserToTable(res);
+			},
+			error: function(res){
+				alert("username already exists");
 			}
 		});
 	}
@@ -92,10 +102,11 @@ $(function(){
 			data:JSON.stringify(data),
 			contentType:"application/json",
 			success: function(res){
-				console.log(res);
+				location.reload();
 			}
 		});
 		$("#id").val("");
+		$("#title").text("Add User");
 	}
 
 	function deleteUser($tr, id){
@@ -104,6 +115,7 @@ $(function(){
 			type:"delete",
 			success: function(res){
 				console.log(res);
+				console.log(12);
 				$tr.remove();
 			}
 		});

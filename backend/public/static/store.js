@@ -9,10 +9,28 @@ $(function(){
 		}
 	});
 
+	$.ajax({
+		url:"/users",
+		type:"get",
+		contentType:"application/json",
+		success: function(res){
+			var users = res.users;
+			initSelect(users);
+		}
+	});
+
 	$(document).on("click", "a.btn-delete", function(){
 		var $tr = $(this).closest("tr");
 		var id = $(this).data("id");
 		deleteStore($tr,id);
+	});
+
+	$(document).on("click", "a.btn-review", function(){
+		var $tr = $(this).closest("tr");
+		var id = $(this).data("id");
+		$("#store").val(id);
+		var $modal = $("#modal");
+		$modal.modal("show");
 	});
 
 	$("#save").click(function(e){
@@ -23,84 +41,119 @@ $(function(){
 		}else{
 			addStore();
 		}
-		
+	});
+
+	$("#saveReview").click(function(){
+		var storeid = $("#store").val();
+		var userid = $("#users").val();
+		var rate = $("#rate").val();
+		var comment = $("#comment").val();
+		var data = {
+			storeID:storeid,
+			userID:userid,
+			rate:parseInt(rate),
+			comment:comment
+		};
+		console.log(JSON.stringify(data));
+		$.ajax({
+			url:"/review",
+			type:"POST",
+			contentType:"application/json",
+			data:JSON.stringify(data),
+			success: function(){
+				$("#modal").modal("hide");
+			}
+		})
 	});
 
 	$(document).on("click", "a.btn-edit", function(){
 		var id = $(this).data("id");
+		$("#title").text("Edit store");
 		editStore(id);
 	})
 
-	function initTable(Stores){
+	function initTable(stores){
 		var $data = $("#data");
-		for(var i=0; i<Stores.length; i++){
-			var $tr = $("<tr>");
-			$tr.append($("<td>").text(Stores[i]._id));
-			$tr.append($("<td>").text(Stores[i].Storename));
-			$tr.append($("<td>").text(Stores[i].firstname));
-			$tr.append($("<td>").text(Stores[i].lastname));
-			$tr.append($("<td>").text(Stores[i].sex));
-			$tr.append($("<td>").text(Stores[i].age));
-			var $td = $("<td>");
-			var $button = $("<a class='btn btn-sm btn-edit' data-id='" + Stores[i]._id + "'>edit</a>");
-			$td.append($button);
-			$button = $("<a class='btn btn-sm btn-delete' data-id='" + Stores[i]._id + "'>delete</a>");
-			$td.append($button);
-			$tr.append($td);
-			$data.append($tr);
+		for(var i=0; i<stores.length; i++){
+			addStoreToTable(stores[i]);
 		}	
 	}
 
+	function initSelect(users){
+		var $users = $("#users");
+		var options= [];
+		for(var i=0;i<users.length; i++){
+			options.push($("<option>").val(users[i]._id).text(users[i].username));
+		}
+		$users.append(options);
+	}
+
 	function addStore(){
-		var firstname = $("#firstname").val();
-		var lastname = $("#lastname").val();
-		var sex =  $('input:radio[name="sex"]:checked').val();
-		var age = $("#age").val();
+		var storename = $("#storename").val();
+		var category = $("#category").val();
+		var address = $("#address").val();
 		var data = {
-			Storename:lastname + " " + firstname,
-			firstname:firstname,
-			lastname:lastname,
-			sex:sex,
-			age:age
+			storename:storename,
+			category:category,
+			address:address
 		}
 		$.ajax({
-			url:"/Store",
-			type:"post",
+			url:"/store",
+			type:"POST",
 			data:JSON.stringify(data),
 			contentType:"application/json",
 			success: function(res){
-				console.log(res);
+				addStoreToTable(res);
 			}
 		});
 	}
 
+	function addStoreToTable(store){
+		var $data = $("#data");
+		var $tr = $("<tr>");
+		$tr.append($("<td>").text(store._id));
+		var $a = $("<a>").attr("href","/review.html?storeid="+store._id).text(store.storename);
+		$tr.append($("<td>").append($a));
+		$tr.append($("<td>").text(store.category));
+		$tr.append($("<td>").text(store.address));
+		var $td = $("<td>");
+		var $button = $("<a class='btn btn-sm btn-edit' data-id='" + store._id + "'>edit</a>");
+		$td.append($button);
+		$button = $("<a class='btn btn-sm btn-delete' data-id='" + store._id + "'>delete</a>");
+		$td.append($button);
+		$button = $("<a class='btn btn-sm btn-review' data-id='" + store._id + "'>add review</a>");
+		$td.append($button);
+		$tr.append($td);
+		$data.append($tr);
+	}
+
 	function updateStore(id){
-		var firstname = $("#firstname").val();
-		var lastname = $("#lastname").val();
-		var sex =  $('input:radio[name="sex"]:checked').val();
-		var age = $("#age").val();
+		var storename = $("#storename").val();
+		var category = $("#category").val();
+		var address = $("#address").val();
 		var data = {
-			Storename:lastname + " " + firstname,
-			firstname:firstname,
-			lastname:lastname,
-			sex:sex,
-			age:age
+			storename:storename,
+			category:category,
+			address:address
 		}
 		$.ajax({
-			url:"/Store?id=" + id ,
+			url:"/store?id=" + id ,
 			type:"put",
 			data:JSON.stringify(data),
 			contentType:"application/json",
 			success: function(res){
 				console.log(res);
+				$("#id").val("");
+				$("#title").text("Add store");
+				location.reload();
 			}
 		});
-		$("#id").val("");
+
 	}
 
 	function deleteStore($tr, id){
 		$.ajax({
-			url:"/Store?id=" +id,
+			url:"/store?id=" +id,
 			type:"delete",
 			success: function(res){
 				console.log(res);
@@ -111,14 +164,14 @@ $(function(){
 
 	function editStore(id){
 		$.ajax({
-			url:"/Store?id=" +id,
+			url:"/store?id=" +id,
 			type:"get",
 			success: function(res){
 				$("#id").val(res._id);
-				$("#firstname").val(res.firstname);
-				$("#lastname").val(res.lastname);
-				$("input[value=" + res.sex + "]").attr("checked",true);
-				$("#age").val(res.age);
+				$("#storename").val(res.storename);
+				$("#category").val(res.category);
+				$("#address").val(res.address);
+
 			}
 		});
 	}

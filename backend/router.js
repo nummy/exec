@@ -9,12 +9,7 @@ var Review = models.Review;
 mongoose.connect("mongodb://localhost/demo");
 
 router.get('/users', function (req, res) {
-	var query = req.query;
-	var params = {};
-	if(query){
-		params = query;
-	}
-	User.find(query, function(err, doc) { 
+	User.find(req.query, function(err, doc) { 
         res.json({"users":doc}); 
     }); 
 });
@@ -66,15 +61,19 @@ router.put('/user', function(req, res){
 	var id = req.query.id;
 	var data = req.body;
 	delete data.username;
-	delete data.firstname;
-	delete data.lastname;
 	try{
 		var sid = mongoose.Types.ObjectId(id); 
-		User.update({_id:sid},data, function(err, user){
+		User.update({_id:sid},data, function(err, doc){
 			if(err){
 				res.sendStatus(404);
 			}else{
-				res.json(user);
+				if(doc.n ==  1){
+					User.findOne({_id:sid}, function(err, user){
+						res.json(user);
+					});
+				}else{
+					res.sendStatus(404);
+				}
 			}
 		});
 	}catch(e){
@@ -101,32 +100,24 @@ router.post('/user', function(req, res){
 
 router.delete('/user', function(req, res){
 	var id = req.query.id;
-	if(id){
-		try{
-			var sid = mongoose.Types.ObjectId(id); 
-			User.remove({_id:sid}, function(err, user){
-				if(err){
-					res.sendStatus(404);
-				}else{
-					res.json("ok")
-				}
-			});
-		}catch(e){
-			res.sendStatus(404);
-		}
-	}else{
+	try{
+		var sid = mongoose.Types.ObjectId(id);
+		Review.remove({userId:id}); 
+		User.remove({_id:sid}, function(err, result){
+			if(err){
+				res.sendStatus(404);
+			}else{
+				res.json({"ret":0,"deleted":1});
+			}
+		});
+	}catch(e){
 		res.sendStatus(404);
 	}
 });
 
 /*router for store*/
 router.get('/stores', function (req, res) {
-	var query = req.query;
-	var params = {};
-	if(query){
-		params = query;
-	}
-	Store.find(query, function(err, doc) { 
+	Store.find(req.query, function(err, doc) { 
         res.json({"stores":doc}); 
     }); 
 });
@@ -140,7 +131,7 @@ router.get('/store', function(req, res){
 				if(err){
 					res.sendStatus(404);
 				}else{
-					if(user){
+					if(store){
 						res.json(store);
 					}else{
 						res.sendStatus(404);
@@ -160,11 +151,17 @@ router.put('/store', function(req, res){
 	var data = req.body;
 	try{
 		var sid = mongoose.Types.ObjectId(id); 
-		Store.update({_id:sid}, data, function(err, store){
+		Store.update({_id:sid}, data, function(err, doc){
 			if(err){
 				res.sendStatus(404);
 			}else{
-				res.json(store);
+				if(doc.n == 1){
+					Store.findOne({_id:sid}, function(err, store){
+						res.json(store);
+					})
+				}else{
+					res.sendStatus(404)
+				}
 			}
 		});
 	}catch(e){
@@ -177,11 +174,12 @@ router.delete('/store', function(req, res){
 	if(id){
 		try{
 			var sid = mongoose.Types.ObjectId(id); 
+			Review.remove({storeId:id});
 			Store.remove({_id:sid}, function(err, store){
 				if(err){
 					res.sendStatus(404);
 				}else{
-					res.json("deleted")
+					res.json({"ret":0,"deleted":1})
 				}
 			});
 		}catch(e){
@@ -213,11 +211,11 @@ router.post('/store', function(req, res){
 router.get('/review', function (req, res) {
 	var id = req.query.id;
 	var storeId = req.query.storeid;
-	var userId = req.query.userId;
+	var userId = req.query.userid;
 	if(id){
 		try{
 			var sid = mongoose.Types.ObjectId(id); 
-			Review.findOne({id:sid}, function(err, doc) { 
+			Review.findOne({_id:sid}, function(err, doc) { 
         		if(err){
         			res.sendStatus(404);
         		}
@@ -229,7 +227,8 @@ router.get('/review', function (req, res) {
 	}
 
 	if(storeId){ 
-		Review.find({storeId:storeId}, function(err, doc) { 
+		console.log(121);
+		Review.find({storeID:storeId}, function(err, doc) { 
         	if(err){
         		res.sendStatus(404);
         	}
@@ -238,14 +237,14 @@ router.get('/review', function (req, res) {
 	}
 
 	if(userId){ 
-		Review.find({userId:userId}, function(err, doc) { 
+		console.log(1212);
+		Review.find({userID:userId}, function(err, doc) { 
         	if(err){
         		res.sendStatus(404);
         	}
         	res.json({"reviews":doc}); 
     	}); 
 	}
-	return res.json({"reviews":[]});
 });
 
 
@@ -270,16 +269,17 @@ router.put('/review', function(req, res){
 
 router.delete('/review', function(req, res){
 	var id = req.query.id;
-	var storeId = req.query.storeId;
-	var userId = req.query.userId;
+	var storeId = req.query.storeID;
+	var userId = req.query.userID;
 	if(id){
+		console.log(12);
 		try{
 			var sid = mongoose.Types.ObjectId(id); 
-			Review.remove({_id:sid}, function(err, store){
+			Review.remove({_id:sid}, function(err, result){
 				if(err){
 					res.sendStatus(404);
 				}else{
-					res.json("deleted")
+					res.json("ok");
 				}
 			});
 		}catch(e){
@@ -287,35 +287,39 @@ router.delete('/review', function(req, res){
 		}
 	}
 	if(storeId){
-		Review.remove({storeId:storeId}, function(err, store){
+		console.log(121);
+		Review.remove({storeID:storeId}, function(err, result){
 			if(err){
 				res.sendStatus(404);
 			}else{
-				res.json("deleted")
+				res.json("ok");
 			}
 		});
 	}
 	if(userId){
-		Review.remove({userId:userId}, function(err, store){
+		console.log(1122);
+		Review.remove({userID:userId}, function(err, result){
 			if(err){
 				res.sendStatus(404);
 			}else{
-				res.json("deleted")
+				res.json("ok");
 			}
 		});
 	}
-	res.sendStatus(404);
 });
 
 router.post('/review', function(req, res){
 	var data = req.body;
-	var userId = data.userId;
-	var storeId = data.storeId;
+	var userID = data.userID;
+	var storeID = data.storeID;
 	var rate = parseInt(data.rate);
-	if(storeId && userId && rate >=0 && rate<=10){
-		var Review = Review(data);
-		Review.save(function(err, s){
+
+	if(storeID && userID && rate >=0 && rate<=10){
+		console.log(12);
+		var review = Review(data);
+		review.save(function(err, s){
 			if(err){
+				console.log(err);
 				res.sendStatus(403);
 			}else{
 				res.json(s);

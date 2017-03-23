@@ -11,14 +11,14 @@ var User = new Schema({
 
 var Store = new Schema({
 	storename:{type:String,required:true},
-	catetory:{type:String,default:""},
+	category:{type:String,default:""},
 	address:{type:String,default:""},
 });
 
 var Review = new Schema({
-	userId:{type:String,required:true, unique:true},
-	storeId:{type:String,default:"",required:true},
-	rate:{type:Number,default:0,required:true},
+	userID:{type:String,required:true,},
+	storeID:{type:String,default:"",required:true},
+	rate:{type:Number,default:0,required:true, min:0, max:10},
 	comment:{type:String,default:""}
 });
 
