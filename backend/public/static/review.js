@@ -1,5 +1,6 @@
 $(function(){
 	var query = location.href.split("?")[1];
+	// init review table
 	$.ajax({
 		url:"/review?"+query,
 		type:"get",
@@ -10,26 +11,44 @@ $(function(){
 		}
 	});
 
+	// init user select
+	$.ajax({
+		url:"/users",
+		type:"get",
+		contentType:"application/json",
+		success: function(res){
+			var users = res.users;
+			initUserSelect(users);
+		}
+	});
+
+	// init store select
+	$.ajax({
+		url:"/stores",
+		type:"get",
+		contentType:"application/json",
+		success: function(res){
+			var stores = res.stores;
+			initStoreSelect(stores);
+		}
+	});
+
+	// delete review
 	$(document).on("click", "a.btn-delete", function(){
 		var $tr = $(this).closest("tr");
 		var id = $(this).data("id");
 		deleteReview($tr,id);
 	});
 
+	// update review
 	$("#save").click(function(e){
 		e.preventDefault();
-		var id = $("#id").val();
-		if(id){
-			updateReview(id);
-		}else{
-			addReview();
-		}
-		
+		updateReview();
 	});
 
 	$(document).on("click", "a.btn-edit", function(){
 		var id = $(this).data("id");
-		$("#title").text("Edit review");
+		$("#modal").modal("show");
 		editReview(id);
 	})
 
@@ -38,6 +57,24 @@ $(function(){
 		for(var i=0; i<reviews.length; i++){
 			addReviewToTable(reviews[i]);
 		}	
+	}
+
+	function initUserSelect(users){
+		var $users = $("#users");
+		var options= [];
+		for(var i=0;i<users.length; i++){
+			options.push($("<option>").val(users[i]._id).text(users[i].username));
+		}
+		$users.append(options);
+	}
+
+	function initStoreSelect(stores){
+		var $stores = $("#store");
+		var options= [];
+		for(var i=0;i<stores.length; i++){
+			options.push($("<option>").val(stores[i]._id).text(stores[i].storename));
+		}
+		$stores.append(options);
 	}
 
 	function addReviewToTable(review){
@@ -57,29 +94,29 @@ $(function(){
 		$data.append($tr);
 	}
 
-	function updateReview(id){
-		var firstname = $("#firstname").val();
-		var lastname = $("#lastname").val();
-		var sex =  $('input:radio[name="sex"]:checked').val();
-		var age = $("#age").val();
+	function updateReview(){
+		var id = $("#review_id").val();
+		var storeID = $("#store").val();
+		var userID = $("#users").val();
+		var rate = $("#rate").val();
+		var comment = $("#comment").val();
 		var data = {
-			reviewname:lastname + " " + firstname,
-			firstname:firstname,
-			lastname:lastname,
-			sex:sex,
-			age:age
+			storeID:storeID,
+			userID:userID,
+			rate:rate,
+			comment:comment
 		}
+		console.log(34);
 		$.ajax({
 			url:"/review?id=" + id ,
 			type:"put",
 			data:JSON.stringify(data),
 			contentType:"application/json",
 			success: function(res){
+				$("#modal").modal("hide");
 				location.reload();
 			}
 		});
-		$("#id").val("");
-		$("#title").text("Add review");
 	}
 
 	function deleteReview($tr, id){
@@ -93,15 +130,15 @@ $(function(){
 	}
 
 	function editReview(id){
+		$("#review_id").val(id);
 		$.ajax({
 			url:"/review?id=" +id,
 			type:"get",
 			success: function(res){
-				$("#id").val(res._id);
-				$("#firstname").val(res.firstname);
-				$("#lastname").val(res.lastname);
-				$("input[value=" + res.sex + "]").attr("checked",true);
-				$("#age").val(res.age);
+				$("#users").val(res.userID);
+				$("#store").val(res.storeID);
+				$("#rate").val(res.rate);
+				$("#comment").val(res.comment);
 			}
 		});
 	}

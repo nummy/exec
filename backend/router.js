@@ -227,7 +227,6 @@ router.get('/review', function (req, res) {
 	}
 
 	if(storeId){ 
-		console.log(121);
 		Review.find({storeID:storeId}, function(err, doc) { 
         	if(err){
         		res.sendStatus(404);
@@ -237,7 +236,6 @@ router.get('/review', function (req, res) {
 	}
 
 	if(userId){ 
-		console.log(1212);
 		Review.find({userID:userId}, function(err, doc) { 
         	if(err){
         		res.sendStatus(404);
@@ -272,7 +270,6 @@ router.delete('/review', function(req, res){
 	var storeId = req.query.storeID;
 	var userId = req.query.userID;
 	if(id){
-		console.log(12);
 		try{
 			var sid = mongoose.Types.ObjectId(id); 
 			Review.remove({_id:sid}, function(err, result){
@@ -287,7 +284,6 @@ router.delete('/review', function(req, res){
 		}
 	}
 	if(storeId){
-		console.log(121);
 		Review.remove({storeID:storeId}, function(err, result){
 			if(err){
 				res.sendStatus(404);
@@ -297,7 +293,6 @@ router.delete('/review', function(req, res){
 		});
 	}
 	if(userId){
-		console.log(1122);
 		Review.remove({userID:userId}, function(err, result){
 			if(err){
 				res.sendStatus(404);
@@ -315,11 +310,9 @@ router.post('/review', function(req, res){
 	var rate = parseInt(data.rate);
 
 	if(storeID && userID && rate >=0 && rate<=10){
-		console.log(12);
 		var review = Review(data);
 		review.save(function(err, s){
 			if(err){
-				console.log(err);
 				res.sendStatus(403);
 			}else{
 				res.json(s);
