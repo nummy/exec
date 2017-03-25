@@ -114,6 +114,7 @@ $(function(){
 			contentType:"application/json",
 			success: function(res){
 				$("#modal").modal("hide");
+				toastr.success("successful");
 				location.reload();
 			}
 		});
@@ -125,6 +126,7 @@ $(function(){
 			type:"delete",
 			success: function(res){
 				$tr.remove();
+				toastr.success("successful");
 			}
 		});
 	}

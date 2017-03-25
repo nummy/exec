@@ -54,7 +54,6 @@ $(function(){
 			rate:parseInt(rate),
 			comment:comment
 		};
-		console.log(JSON.stringify(data));
 		$.ajax({
 			url:"/review",
 			type:"POST",
@@ -62,6 +61,7 @@ $(function(){
 			data:JSON.stringify(data),
 			success: function(){
 				$("#modal").modal("hide");
+				toastr.success("successful");
 			}
 		})
 	});
@@ -104,6 +104,7 @@ $(function(){
 			contentType:"application/json",
 			success: function(res){
 				addStoreToTable(res);
+				toastr.success("successful");
 			}
 		});
 	}
@@ -145,6 +146,7 @@ $(function(){
 				console.log(res);
 				$("#id").val("");
 				$("#title").text("Add store");
+				toastr.success("successful");
 				location.reload();
 			}
 		});
@@ -156,7 +158,7 @@ $(function(){
 			url:"/store?id=" +id,
 			type:"delete",
 			success: function(res){
-				console.log(res);
+				toastr.success("successful");
 				$tr.remove();
 			}
 		});

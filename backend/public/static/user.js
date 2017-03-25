@@ -77,9 +77,10 @@ $(function(){
 			contentType:"application/json",
 			success: function(res, status){
 				addUserToTable(res);
+				toastr.success("successful");
 			},
 			error: function(res){
-				alert("username already exists");
+				toastr.warning("username already exists!");
 			}
 		});
 	}
@@ -102,6 +103,7 @@ $(function(){
 			data:JSON.stringify(data),
 			contentType:"application/json",
 			success: function(res){
+				toastr.success("successful");
 				location.reload();
 			}
 		});
@@ -114,8 +116,7 @@ $(function(){
 			url:"/user?id=" +id,
 			type:"delete",
 			success: function(res){
-				console.log(res);
-				console.log(12);
+				toastr.success("successful");
 				$tr.remove();
 			}
 		});
