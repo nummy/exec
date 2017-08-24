@@ -1,0 +1,5 @@
+{"TOP":3, "FRONT":2, "LEFT":6, "RIGHT":1, "BOTTOM":4, "BACK":5}
+TOP  FRONT LEFT RIGHT BOTTOM BACK ACTION
+3    2     6    1     4      5
+6    2     4    3     1      5    W
+5    6     4    3     2      1    F
