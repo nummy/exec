@@ -51,7 +51,6 @@ def find_path(graph, start, goal):
 def main():
     vertices, edges, queries = read_file()
     graph = build_graph(vertices, edges)
-    print(graph)
     for query in queries:
         if find_path(graph, query[0], query[1]):
             print("1")

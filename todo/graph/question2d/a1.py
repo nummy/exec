@@ -91,39 +91,15 @@ def read_file():
 
 mst_weight = 0.
 
+
 # Print the weight of the mst to two decimal-places. 
 
-# def prim_mst(graph, edges):
-#     edgeTo = {}
-#     distTo = {}
-#     marked = []
-#     for v in graph.get_nodes():
-#         distTo[v] = 9999999
-#     pq = PriorityQueue()
-#     distTo[1] = 0
-#     pq.push(1, 0)
-#     visited_edge = []
-#     while not pq.isEmpty():
-#         v = pq.pop()
-#         marked.append(v)
-#         for neighbor in graph.neighbors(v):
-#             if neighbor in marked:
-#                 continue
-#             weight = graph.get_cost(v, neighbor)
-#             if weight < distTo[neighbor]:
-#                 edgeTo[neighbor] = (min(v, neighbor), max(v, neighbor))
-#                 distTo[neighbor] = graph.get_cost(v, neighbor)
-#                 if neighbor in pq:
-#                     pq.update(neighbor, distTo[neighbor])
-#                 else:
-#                     pq.push(neighbor, distTo[neighbor])
-#     return edgeTo
-#     
 def prim_mst(graph, edges):
     marked = {}
     pq = PriorityQueue()
     mst = []
-    visit(graph, 1, marked, pq, edges)
+    nodes = graph.get_nodes()
+    visit(graph, nodes[0], marked, pq, edges)
     while not pq.isEmpty():
         edge = pq.pop()
         v = edge[0]
@@ -153,4 +129,8 @@ if __name__ == "__main__":
     vertices, edges, queries = read_file()
     vertices = list(vertices)
     graph = Graph(vertices, edges)
-    print(prim_mst(graph, queries))
+    path = prim_mst(graph, queries)
+    total_weight = 0
+    for edge in path:
+        total_weight += graph.get_cost(edge[0], edge[1])
+    print("%.2f" % total_weight)
