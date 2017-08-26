@@ -1,0 +1,13 @@
+7.echo $HOME; pwd -P ~;
+8.root:x:0:0:root:/root:/bin/bash
+login shell:/bin/bash user ID:0; group ID:0;home directory:/root
+The password is encrypted and in the /etc/shadow
+9.can't login the user anymore, because linux use the field is not exist
+10.The number of the inode is 4541160,the home directory is /root;
+The command is df -i
+11.mkdir memos; touch memo.james
+
+15.rm -rf memos; ls -al, can't see it anymore
+16.CTRL_D is just a signal saying that this is the end of a text stream
+17.ls -al | grep -E 'chapter(1|2|6|8|9).(eps|prn)'
+
