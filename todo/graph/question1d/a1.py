@@ -1,28 +1,5 @@
-# Read in the number of vertices (n) and edges (m)
-# n = int(input())
-# m = int(input())
-
-# edges, queries = [], []
-
-# for _ in range(m):
-#     edges.append(input().split())
-
-# q = int(input())
-
-# for _ in range(q):
-#     queries.append(input().split())
-	
-# Print a `1` to stdout for each query. This section should be altered to instead print a `1` where the
-# query indicates a connection and `0` else.
-
-# for _ in queries:
-#     print(int(True))
-
-from collections import deque
-
 def read_file():
-    #filename = raw_input("Please input the file name:")
-    filename="graph8.in"
+    filename = input("Please input the file name:")
     edges, queries = [], []
     vertices =set()
     with open(filename, "r") as fp:
@@ -35,11 +12,11 @@ def read_file():
             end = int(arr[1])
             vertices.add(start)
             vertices.add(end)
-            weight = float(arr[2])
-            edges.append((start, end, weight))
+            cost = float(arr[2])
+            edges.append((start, end, cost))
         q = int(next(fp).strip())
         for i in range(q):
-            line = line.strip()
+            line = next(fp).strip()
             arr = line.split()
             queries.append([int(arr[0]), int(arr[1])])
     return vertices, edges, queries
@@ -56,25 +33,29 @@ def build_graph(vertices, edges):
     return graph
 
 def find_path(graph, start, goal):
+    if start not in graph:
+        return False
     visited = set()
-    queue = deque()
-    queue = queue.appendleft(start)
-    while queue:
-        node = queue.pop()
+    stack = [start]
+    while stack:
+        node = stack.pop()
         if node not in visited:
             visited.add(node)
             if node == goal:
                 return True
             for neighbor in graph[node]:
                 if neighbor not in visited:
-                    queue.appendleft(neighbor)
+                    stack.append(neighbor)
     return False
 
 def main():
     vertices, edges, queries = read_file()
     graph = build_graph(vertices, edges)
-    print graph
+    print(graph)
     for query in queries:
-        print find_path(graph, query[0], query[1])
+        if find_path(graph, query[0], query[1]):
+            print("1")
+        else:
+            print("0")
 
 main()
