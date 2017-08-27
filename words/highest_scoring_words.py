@@ -8,6 +8,7 @@ score_map = {"a": 2, "b": 5, "c": 4, "d": 4, "e": 1, "f": 6, "g": 5, "h": 5,
 
 
 def get_letter():
+    """get letter from the input"""
     letter = input("Enter between 3 and 10 lowercase letters:")
     letter = letter.replace(" ", "")
     if not is_lowercase(letter):
@@ -20,6 +21,7 @@ def get_letter():
 
 
 def is_lowercase(letter):
+    '''if the letter is lowercase'''
     for char in letter:
         if char not in string.ascii_lowercase:
             return False
@@ -27,6 +29,7 @@ def is_lowercase(letter):
 
 
 def get_score(word):
+    '''get the score of the word'''
     total = 0
     for char in word:
         total += score_map[char]
@@ -34,6 +37,7 @@ def get_score(word):
 
 
 def is_built_from_letter(word, letter):
+    '''is the word built from the letter'''
     if len(word) > len(letter):
         return False
     word_set = set(word)
@@ -48,13 +52,13 @@ def is_built_from_letter(word, letter):
     return True
 
 def get_highest_score():
+    '''get the highest score word of the words'''
     letter = get_letter()
     fp = open("wordsEn.txt", "r")
     highest_score = 0
     highest_score_words = set()
     for line in fp:
         word = line.strip()
-
         if is_built_from_letter(word, letter):
             score = get_score(word)
             if score >highest_score:
