@@ -1,3 +1,4 @@
+import sys
 import heapq
 
 class PriorityQueue:
@@ -64,32 +65,31 @@ class Graph:
         return self.weights[key]
 
 def read_file():
-    filename = input("Please input the file name:")
+    # Read in the number of vertices (n) and edges (m)
     edges, queries = [], []
     vertices =set()
-    with open(filename, "r") as fp:
-        n = int(next(fp).strip())
-        m = int(next(fp).strip())
-        for i in range(m):
-            line = next(fp).strip()
-            arr = line.split()
-            start = int(arr[0])
-            end = int(arr[1])
-            vertices.add(start)
-            vertices.add(end)
-            cost = float(arr[2])
-            edges.append((start, end, cost))
-        q = int(next(fp).strip())
-        for i in range(q):
-            line = next(fp).strip()
-            arr = line.split()
-            v = int(arr[0])
-            w = int(arr[1])
-            queries.append((min(v,w), max(v,w)))
+    n = int(input())
+    m = int(input())
+    
+    # Read the edges from stdin.
+    for _ in range(m):
+        arr = input().split()
+        start = int(arr[0])
+        end = int(arr[1])
+        vertices.add(start)
+        vertices.add(end)
+        cost = float(arr[2])
+        edges.append((start, end, cost))
+    
+    # Read the A edges. You may want to use a different data-structure.
+    q = int(input())
+    for i in range(q):
+        arr = input().split()
+        v = int(arr[0])
+        w = int(arr[1])
+        queries.append((min(v,w), max(v,w)))
+
     return vertices, edges, queries
-
-
-mst_weight = 0.
 
 
 # Print the weight of the mst to two decimal-places. 

@@ -1,5 +1,6 @@
 def main():
-    loop = True
+    '''main function'''
+    loop = True  # loop flag
     while loop:
         goal = input("Enter the desired goal cell number:")
         if not goal.isdigit():
@@ -10,13 +11,15 @@ def main():
                 print("Incorrect value, try again")
             else:
                 loop = False
-    directions = get_directions(goal)
+    directions = get_directions(goal) # get the directions
     die = {"TOP":3, "FRONT":2, "LEFT":6, "RIGHT":1, "BOTTOM":4, "BACK":5}
     LR = ["LEFT", "TOP", "RIGHT", "BOTTOM"]
     FB = ["FRONT", "TOP", "BACK", "BOTTOM"]
     for direction in directions:
+        '''take each move'''
         LR_VALUE = [die[key] for key in LR]
         FB_VALUE = [die[key] for key in FB]
+        # handle each move, update value
         if direction == "RIGHT":
             LR_VALUE = LR_VALUE[-1:] + LR_VALUE[:-1]
             die.update(dict(zip(LR, LR_VALUE)))
@@ -35,6 +38,7 @@ def main():
 
 
 def get_directions(goal):
+    '''get move direction, return a list of directions'''
     if goal == 1:
         return []
     directions = ["RIGHT", "FORWARD", "LEFT", "BACKWARD"]

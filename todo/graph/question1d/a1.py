@@ -1,24 +1,25 @@
+import sys
+
 def read_file():
-    filename = input("Please input the file name:")
     edges, queries = [], []
     vertices =set()
-    with open(filename, "r") as fp:
-        n = int(next(fp).strip())
-        m = int(next(fp).strip())
-        for i in range(m):
-            line = next(fp).strip()
-            arr = line.split()
-            start = int(arr[0])
-            end = int(arr[1])
-            vertices.add(start)
-            vertices.add(end)
-            cost = float(arr[2])
-            edges.append((start, end, cost))
-        q = int(next(fp).strip())
-        for i in range(q):
-            line = next(fp).strip()
-            arr = line.split()
-            queries.append([int(arr[0]), int(arr[1])])
+    n = int(input())
+    m = int(input())
+
+    for _ in range(m):
+        arr = input().split()
+        start = int(arr[0])
+        end = int(arr[1])
+        vertices.add(start)
+        vertices.add(end)
+        cost = float(arr[2])
+        edges.append((start, end, cost))
+
+    q = int(input())
+
+    for _ in range(q):
+        arr = input().split()
+        queries.append([int(arr[0]), int(arr[1])])        
     return vertices, edges, queries
 
 def build_graph(vertices, edges):

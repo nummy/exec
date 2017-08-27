@@ -68,17 +68,19 @@ def get_highest_score():
                 highest_score_words.add(word)
     highest_score_words = list(highest_score_words)
     highest_score_words.sort()
-    print("The highest score is %s." % highest_score)
     if len(highest_score_words) == 1:
+        print("The highest score is %s." % highest_score)
         print("The highest scoring word is %s" % highest_score_words[0])
+    elif len(highest_score_words) == 0:
+        print("No word is built from some of those letters.")
     else:
+        print("The highest score is %s." % highest_score)
         print("The highest scoring words are, in alphabetical order:")
         for word in highest_score_words:
             print("\t" + word)
 
-
-
 def main():
+    '''main function'''
     get_highest_score()
 
 if __name__ == "__main__":
