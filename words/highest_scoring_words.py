@@ -77,7 +77,7 @@ def get_highest_score():
         print("The highest score is %s." % highest_score)
         print("The highest scoring words are, in alphabetical order:")
         for word in highest_score_words:
-            print("\t" + word)
+            print("    " + word)
 
 def main():
     '''main function'''

@@ -13,7 +13,10 @@ def play():
     print("It is a %s" % hand)
     count = 0
     while True and count < 2:
-        keeps = input("Which dice do you want to keep for the second roll?")
+        if count == 0:
+            keeps = input("Which dice do you want to keep for the second roll?")
+        else:
+            keeps = input("Which dice do you want to keep for the third roll?")
         keeps = keeps.strip()
         if keeps  == "all" or keeps == "All":
             print("Ok, done")
@@ -37,8 +40,6 @@ def play():
         pokers = translate(nums)
         print("The roll is: %s" % " ".join(pokers))
         hand = get_hands(nums)
-        if hand == "Straight":
-            hand = "Bust"
         print("It is a %s" % hand)
         count += 1
 
@@ -100,7 +101,13 @@ def get_hands(nums):
     if len(nums_set) == 4:
         return "One pair"
     if len(nums_set) == 5:
-        return "Straight"
+        nums = list(nums_set)
+        nums.sort()
+        v = nums[-1] - nums[1]
+        if v == 4:
+            return "Straight"
+        else:
+            return "Bust"
 
 
 def simulate(count):
@@ -112,9 +119,9 @@ def simulate(count):
         nums.sort()
         pokers = translate(nums)
         hand = get_hands(nums)
-        hands[hand] += 1
+        if hand != "Bust":
+            hands[hand] += 1
     keys = ["Five of a kind", "Four of a kind", "Full house", "Straight", "Three of a kind", "Two pair", "One pair"]
     for key in keys:
         percent = hands[key]/count*100.0
         print("%s : %.2f%%" % (key, percent))
-
