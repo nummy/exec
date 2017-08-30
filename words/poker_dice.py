@@ -103,7 +103,7 @@ def get_hands(nums):
     if len(nums_set) == 5:
         nums = list(nums_set)
         nums.sort()
-        v = nums[-1] - nums[1]
+        v = nums[-1] - nums[0]
         if v == 4:
             return "Straight"
         else:
