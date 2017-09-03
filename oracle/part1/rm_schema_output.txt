@@ -1,8 +1,7 @@
--- Oracle SQL Developer Data Modeler ¸ÅÒª±¨¸æ: 
 -- 
--- CREATE TABLE                             9
--- CREATE INDEX                             1
--- ALTER TABLE                             17
+-- CREATE TABLE                            10
+-- CREATE INDEX                             2
+-- ALTER TABLE                             20
 -- CREATE VIEW                              0
 -- ALTER VIEW                               0
 -- CREATE PACKAGE                           0
