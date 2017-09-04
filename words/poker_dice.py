@@ -125,3 +125,10 @@ def simulate(count):
     for key in keys:
         percent = hands[key]/count*100.0
         print("%s : %.2f%%" % (key, percent))
+
+
+from random import seed
+seed(0)
+simulate(10)
+simulate(100)
+simulate(1000)
