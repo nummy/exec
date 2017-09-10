@@ -416,7 +416,7 @@ def paste_up(dummy_parameter):
                     dot(140)
                     penup()
                     goto(x-70, y)
-                    color("Crimson")
+                    color("crimson")
                     width(20)
                     pendown()
                     setheading(0)
@@ -436,7 +436,7 @@ def paste_up(dummy_parameter):
                     penup()
                     goto(x, y)
                     setheading(270)
-                    color('Crimson')
+                    color('crimson')
                     dot(190)
                     color("white")
                     dot(140)
@@ -685,7 +685,7 @@ title("Ebay")
 ### Call the student's function to display the billboard
 ### ***** Change the number in the argument to this function
 ### ***** to test your code with a different data set
-paste_up(data_sets[18])
+paste_up(data_sets[2])
 
 # Exit gracefully
 release_drawing_canvas()
