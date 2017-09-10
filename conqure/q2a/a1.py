@@ -35,12 +35,14 @@ def merge(left, right):
 
 
 def isSmall(point1, point2):
-    if point1[1] < point2[1]:
+    if point1[0] < point2[0]:
         return True
-    elif point1[1] == point2[1]: 
+    if point1[0] == point2[0]: 
         if point1[0] < point2[0]:
             return True
     return False
 
-for item in merge(left, right):
+lst = merge(left, right)
+lst = sorted(lst, key=lambda item:(item[0], item[1]))
+for item in lst:
     print(int(item[2]))

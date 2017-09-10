@@ -4,7 +4,6 @@ for _ in range(n):
     p = float(input())
     points.append(p)
 
-nums = list(set(points))
 
 def quick_sort(lists, left, right):
     # quick sort
@@ -24,9 +23,8 @@ def quick_sort(lists, left, right):
     quick_sort(lists, low, left - 1)
     quick_sort(lists, left + 1, high)
     return lists
-
+nums = points[:]
 nums = quick_sort(nums, 0, len(nums)-1)
-
 for i in range(n):
-    point = points[i]
+    point = nums[i]
     print(nums.index(point))
