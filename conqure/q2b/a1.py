@@ -13,14 +13,16 @@ def merge(left, right):
     lcounter = 0
     while i < len(left) and j < len(right):
         if isSmall(left[i], right[j]):
-            if(left[i][0] < right[j][0] and left[i][1] < right[j][1]):
-                rcounter += 1
-            merged.append([left[i][0], left[i][1], left[i][2]+lcounter])
+            for item in right[j:]:
+                if(left[i][0] < item[0] and left[i][1] < item[1]):
+                    item[2] += 1
+            merged.append([left[i][0], left[i][1], left[i][2]])
             i += 1
         else:
-            if(left[i][0] > right[j][0] and left[i][1] > right[j][1]):
-                lcounter += 1
-            merged.append([right[j][0], right[j][1], right[j][2] + rcounter])
+            for item in left[i:]:
+                if(item[0] > right[j][0] and item[1] > right[j][1]):
+                    item[2] += 1
+            merged.append([right[j][0], right[j][1], right[j][2]])
             j += 1
     for item in left[i:]:
         merged.append([item[0], item[1], item[2]+lcounter])
@@ -28,11 +30,13 @@ def merge(left, right):
         merged.append([item[0], item[1], item[2]+rcounter])
     return merged 
 
+
+
 def isSmall(point1, point2):
-    if point1[1] < point2[1]:
+    if point1[0] < point2[0]:
         return True
-    elif point1[1] == point2[1]: 
-        if point1[0] < point2[0]:
+    elif point1[0] == point2[0]: 
+        if point1[1] < point2[1]:
             return True
     return False
 
@@ -44,7 +48,9 @@ def merge_sort(points):
     num = len(points) // 2
     left = merge_sort(points[:num])
     right = merge_sort(points[num:])
-    return merge(left, right)
+    res = merge(left, right)
+    return res
+
 
 for item in merge_sort(points):
-    print(item)
+    print(item[2])
