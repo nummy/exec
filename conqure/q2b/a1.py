@@ -9,8 +9,6 @@ def merge(left, right):
     merged = []
     i = 0 
     j = 0
-    rcounter = 0
-    lcounter = 0
     while i < len(left) and j < len(right):
         if isSmall(left[i], right[j]):
             for item in right[j:]:
@@ -25,9 +23,9 @@ def merge(left, right):
             merged.append([right[j][0], right[j][1], right[j][2]])
             j += 1
     for item in left[i:]:
-        merged.append([item[0], item[1], item[2]+lcounter])
+        merged.append([item[0], item[1], item[2]])
     for item in right[j:]:
-        merged.append([item[0], item[1], item[2]+rcounter])
+        merged.append([item[0], item[1], item[2]])
     return merged 
 
 
