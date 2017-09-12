@@ -602,7 +602,46 @@ def paste_up(dummy_parameter):
                     setheading(90)
                     circle(60, 180)
                     end_fill()
-
+    choice = dummy_parameter[0]
+    if choice == "X":
+        penup()
+        # draw 'C'
+        goto(-120, 100)
+        pendown()
+        pencolor('black')
+        pensize(20)
+        goto(-200, 90)
+        goto(-240, 40)
+        goto(-250, 10)
+        goto(-250, -30)
+        goto(-240, -60)
+        goto(-200, -90)
+        goto(-120, -90)
+        penup()
+        # draw 'L'
+        goto(-50, 100)
+        pendown()
+        goto(-52, 80)
+        goto(-50, 0)
+        goto(-52, -100)
+        goto(0, -95)
+        goto(80, -100)
+        # draw "J"
+        penup()
+        goto(150, 100)
+        pendown()
+        goto(250, 100)
+        penup()
+        goto(200, 100)
+        pendown()
+        goto(202, 50)
+        goto(200, 0)
+        goto(203, -50)
+        goto(200, -100)
+        goto(180, -120)
+        goto(160, -140)
+        goto(140, -120)
+        goto(120, -100)
 #
 #--------------------------------------------------------------------#
 

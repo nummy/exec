@@ -643,6 +643,42 @@ def paste_up(dummy_parameter):
                     pendown()
                     setheading(60)
                     forward(280)
+    x = dummy_parameter[0]
+    if x == "X":
+        # C
+        penup()
+        width(20)
+        pencolor("Violet")
+        goto(-100, 100)
+        pendown()
+        goto(-120, 99)
+        goto(-150, 95)
+        goto(-180, 90)
+        goto(-210, 80)
+        goto(-230, 40)
+        goto(-230, -30)
+        goto(-210, -80)
+        goto(-180, -90)
+        goto(-150, -95)
+        goto(-120, -99)
+        goto(-100, -100)
+        # Y
+        penup()
+        goto(100, 90)
+        pendown()
+        goto(120, 70)
+        goto(150,45)
+        goto(200, -10)
+        goto(250, 50)
+        goto(270, 65)
+        goto(300, 95)
+        penup()
+        goto(200, -10)
+        pendown()
+        goto(202, -50)
+        goto(198, -100)
+        goto(202, -150)
+
 
 
 #
@@ -685,7 +721,7 @@ title("Ebay")
 ### Call the student's function to display the billboard
 ### ***** Change the number in the argument to this function
 ### ***** to test your code with a different data set
-paste_up(data_sets[2])
+paste_up(data_sets[43])
 
 # Exit gracefully
 release_drawing_canvas()
