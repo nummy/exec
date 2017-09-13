@@ -428,22 +428,24 @@ def paste_up(dummy_parameter):
                 # start point -100, 0
                 if direction == "Upright":
                     penup()
-                    goto(x, y+130)
+                    goto(x+5, y+130)
                     color("yellow")
                     dot(40)
+
                     goto(x-15, y+100)
                     fillcolor("yellow")
                     setheading(0)
                     begin_fill()
                     forward(30)
-                    right(90)
+                    right(100)
                     forward(180)
-                    right(90)
+                    right(80)
                     forward(30)
                     end_fill()
+
                 if direction == "Upside down":
                     penup()
-                    goto(x, y-130)
+                    goto(x-5, y-130)
                     color("yellow")
                     dot(40)
                     goto(x+15, y-100)
@@ -451,9 +453,9 @@ def paste_up(dummy_parameter):
                     setheading(180)
                     begin_fill()
                     forward(30)
-                    right(90)
+                    right(100)
                     forward(180)
-                    right(90)
+                    right(80)
                     forward(30)
                     end_fill()
             elif name == "Sheet C":
@@ -487,14 +489,14 @@ def paste_up(dummy_parameter):
                     forward(20)
                     end_fill()
 
-                    goto(x-70, y+40)
+                    goto(x-70, y+110)
                     begin_fill()
                     setheading(-90)
-                    forward(120)
+                    forward(190)
                     right(90)
                     forward(20)
                     right(90)
-                    forward(120)
+                    forward(190)
                     end_fill()
                 if direction == "Upside down":
                     penup()
@@ -524,14 +526,14 @@ def paste_up(dummy_parameter):
                     forward(20)
                     end_fill()
 
-                    goto(x+70, y-40)
+                    goto(x+70, y-110)
                     begin_fill()
                     setheading(90)
-                    forward(120)
+                    forward(190)
                     right(90)
                     forward(20)
                     right(90)
-                    forward(120)
+                    forward(190)
                     end_fill()
             else:
                 # sheet D
@@ -677,7 +679,7 @@ title("NOKIA")
 # Call the student's function to display the billboard
 # ***** Change the number in the argument to this function
 # ***** to test your code with a different data set
-paste_up(data_sets[39])
+paste_up(data_sets[51])
 
 
 # Exit gracefully

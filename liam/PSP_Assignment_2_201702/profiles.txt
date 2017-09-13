@@ -1,0 +1,43 @@
+Fox Mulder fox@findthetruth.com m
+The truth is out there!
+1
+tony@ironman.com
+Tony Stark tony@ironman.com m
+Saving the world is hard work - no time for friends.
+0
+Phil Dunphy phil@dunphy.com m
+wtf? = why the face?
+2
+robbie@football.com
+fox@findthetruth.com
+John Mayer john@guitar.com m
+Waiting on the world to change!
+2
+katy@perry.com
+dguetta@willworkwithanyone.org
+Katy Perry katy@perry.com f
+Waiting on John to change.
+3
+john@guitar.com
+dguetta@willworkwithanyone.org
+jimmy@tonightshow.com
+David Guetta dguetta@willworkwithanyone.org m
+Will collaborate with anyone who has a heartbeat.
+5
+katy@perry.com
+john@guitar.com
+tony@ironman.com
+fox@findthetruth.com
+robbie@football.com
+Jimmy Fallon jimmy@tonightshow.com m
+I wish I was as good as Letterman, thank goodness he's retiring.
+2
+robbie@football.com
+tony@ironman.com
+Robbie Gray robbie@football.com m
+Training hard... can we win?  Yes we Ken!
+4
+jimmy@tonightshow.com
+fox@findthetruth.com
+john@guitar.com
+tony@ironman.com
