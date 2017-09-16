@@ -29,43 +29,57 @@ public class Snake extends Animal {
 		moveSpeed = 2f;
 		
 	}
-
+	/**
+	 * update the Snake when it is alive, call the super update method
+	 */
 	@Override
 	public void update(long millisElapsed) {
-		super.update(millisElapsed);
-		if(this.isAlive()) {
+		super.update(millisElapsed); // call super update method
+		if(this.isAlive()) { 
+			// if the snake is alive
+			// update the speed
 			this.setSpeed(moveSpeed);
 			if((targetWombat != null) && targetWombat.isAlive()) {
+				// if the target exists and target is alive
 				target = targetWombat.getPosition();
 				double distance = target.distance(this.getPosition());
 				if(distance<Tile.WIDTH/2) {
+					// remove the target wombat
 					this.setEnergy(this.getEnergy() + targetWombat.getEnergy());
 					targetWombat.die();
 					targetWombat = null;
 				}
 				if(distance<Tile.WIDTH*3) {
+					// update speed
 					this.setSpeed(attackSpeed);
 				}
+				// reselect a new target
 				selectTarget();
 			}
 		}
 	}
-
+	/**
+	 * breed a new animal
+	 */
 	@Override
 	public Animal breed() {
 		// TODO Auto-generated method stub
 		return new Snake(this.getX(), this.getY());
 	}
-
+	/*
+	 *  select a new target
+	 */
 	@Override
 	public void selectTarget() {
 		// TODO Auto-generated method stub
+		// find the target when energy less than 8
 		if(energy < 8) {
 			Wombat wombat = this.findWombat();
 			if(wombat !=null) {
 				this.setTarget(wombat.getPosition());
 			}
 		}else {
+			// generate a new target and handle out of bounds exception
 			Vector2D position = this.getPosition();
 			Random r = new Random();
 			int x = r.nextInt(150);
@@ -102,10 +116,14 @@ public class Snake extends Animal {
 			targetWombat =  wombat;
 		}
 	}
-	
+	/**
+	 * find the closest wombat
+	 * @return
+	 */
 	public Wombat findWombat() {
 		Wombat wombat=null;
 		try {
+			// get all the wombats
 			Object[] objs = GameEngine.getGameObjs("ecosim.entity.Wombat");
 			if(objs.length >0) {
 				Wombat[] wombats = new Wombat[objs.length];
@@ -117,6 +135,7 @@ public class Snake extends Animal {
 				double distance = 0;
 				Vector2D position = this.getPosition();
 				double min = position.distance(wombats[0].getPosition());
+				// get the closest wombat
 				for(int i=0; i<wombats.length; i++) {
 					distance = position.distance(wombats[i].getPosition());
 					if(distance < min) {

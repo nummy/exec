@@ -27,8 +27,9 @@ public class Wombat extends Animal {
 	 */
 	@Override
 	public void update(long millisElapsed) {
-		super.update(millisElapsed);
+		super.update(millisElapsed); // call super update
 		if(this.isAlive()) {
+			// update only when it is alive
 			Vector2D position = this.getPosition();
 			Vector2D target = this.target;
 			if(target != null) {
@@ -45,7 +46,7 @@ public class Wombat extends Animal {
 				double distance = target.distance(position);
 				if(distance<Tile.WIDTH/2) {
 					this.setEnergy(this.getEnergy()+10);
-					targetGrass.die();
+					targetGrass.die(); // remove target grass
 					targetGrass = null;
 					selectTarget();  // select another target
 				}
@@ -66,7 +67,7 @@ public class Wombat extends Animal {
 	 */
 	@Override
 	public void selectTarget() {
-		// TODO Auto-generated method stub
+		// get the closest wombat
 		if(energy < 10) {
 			GrassTuft tuft = this.findGrass();
 			if(tuft != null) {
@@ -74,6 +75,7 @@ public class Wombat extends Animal {
 			}
 			
 		}else {
+			// generate a new wombat
 			if(this.targetGrass == null && this.target == null) {
 				Vector2D position = this.getPosition();
 				Random r = new Random();
@@ -87,6 +89,7 @@ public class Wombat extends Animal {
 				if(sign == 0) {
 					y = -y;
 				}
+				// handle out of bound exception
 				try {
 					if(x<0 || y<0 || x > GameEngine.getGame().getWinWidth() || y > GameEngine.getGame().getWinHeight()){
 						Vector2D bad = new Vector2D((float)x,(float)y);
@@ -120,6 +123,7 @@ public class Wombat extends Animal {
 	public GrassTuft findGrass() {
 		GrassTuft guft=null;
 		try {
+			// get all the GrassTuft in the board
 			Object[] objs = GameEngine.getGameObjs("ecosim.entity.GrassTuft");
 			if(objs.length > 0) {
 				GrassTuft[] tufts = new GrassTuft[objs.length];
@@ -131,6 +135,7 @@ public class Wombat extends Animal {
 				double distance = 0;
 				Vector2D position = this.getPosition();
 				double min = position.distance(tufts[0].getPosition());
+				// find the closest grassTuft
 				for(int i=0; i<tufts.length; i++) {
 					distance = position.distance(tufts[i].getPosition());
 					if(distance < min) {

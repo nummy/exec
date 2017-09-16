@@ -51,16 +51,19 @@ public abstract class Animal extends Entity{
 	public void update(long millisElapsed) {
 		this.timer += millisElapsed;
 		if(timer > 1000) {
-			energy--;
-			breedTime--;
+			// if timer > 1000, then update operation
+			energy--;  // decrease one
+			breedTime--;  // decrease one
 			if(energy<=0) {
 				this.die();
 			}else {
+				// breed a new animal
 				if(breedTime<=0) {
 					Animal an= this.breed();
 					GameEngine.add(an);
 					breedTime = maxBreedTime;
 				}
+				//move to next target when it is alive
 				if(this.isAlive()) {
 					//move to next target
 					Vector2D target = this.target;
@@ -131,6 +134,7 @@ public abstract class Animal extends Entity{
 	 * @param m
 	 */
 	public void setMaxBreedTime(int m) {
+		// update only m > 0
 		if(m>=0) {
 			this.maxBreedTime = m;
 		}
@@ -140,6 +144,7 @@ public abstract class Animal extends Entity{
 	 * @param s
 	 */
 	public void setSpeed(float s) {
+		// update only when s > 0
 		if(s>=0) {
 			this.speed = s;
 		}
