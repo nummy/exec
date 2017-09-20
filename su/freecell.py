@@ -1,4 +1,3 @@
-import re
 from card import Card
 from deck import Deck
 
@@ -11,8 +10,8 @@ Commands:
     TT x y    Move card from tableau x to tableau y
     CF x y    Move card from cell x to foundation y
     CT x y    Move card from cell x to tableau y
-    H         Display this menu of commands
-    Q         Quit the game
+    H         Display the commands
+    Q         Quit
 =======================================================
 """
 
@@ -35,20 +34,23 @@ class NotFreecell(object):
 
     def valid_fnd_move(self, src_card, dest_card):
         """
-        Is the foundation move valid?
+        Is the movement to the foundation valid ?
         """
         if src_card is None:
-            raise RuntimeError("Error: invalid command because of no card from the source") 
+            print("Invalid command: because of no card from the source") 
+            return False
         if dest_card is None:
-            if src_card.get_face() == 1:
-                pass
+            if src_card.get_face() == 0:
+                return True
             else:
-                raise RuntimeError("Invalid move: Source card is not an Ace") 
+                print("Invalid move: Source card is not an Ace")
+                return False
         else:
-            if src_card.suit() == dest_card.get_suit() and src_card.get_face() == dest_card.get_face()+1:
-                pass
+            if src_card.get_suit() == dest_card.get_suit() and src_card.get_face() == dest_card.get_face()+1:
+                return True
             else:
-                raise RuntimeError("Error: invalid command because of source card and destination card are not matching ") 
+                print("Invalid command because of source card and destination card are not matching ") 
+                return False
 
 
     def valid_tab_move(self, src_card, dest_card):
@@ -56,78 +58,112 @@ class NotFreecell(object):
         Is the tab move valid?
         """    
         if src_card is None:
-            raise RuntimeError("Error: invalid command because of no card from the source") 
+            print("Invalid command: because of no card from the source") 
+            return False
         if dest_card is None:
-            pass
+            return True
         else:
             if src_card.get_suit() == dest_card.get_suit():
-                raise RuntimeError("Invalid move: Wrong suit") 
+                print("Invalid move: Wrong suit") 
+                return False
             else:
                 if src_card.get_face() != dest_card.get_face()-1:
-                    raise RuntimeError("Invalid move: Wrong face") 
+                    print("Invalid move: Wrong face") 
+                    return True
 
     def valid_cell_move(self, src_card, dest_card):
         """
         Is the cell move valid ?
         """    
         if dest_card is None:
-            pass
+            return True
         else:
-            raise RuntimeError("Error: invalid command because of dest cell is not empty")   
+            print("Invalid command: because of dest cell is not empty")
+            return  False
 
     def tableau_to_cell(self, tab, cell):
         """
         move card from tableau to cell
-        """    
-        temp_tab = None if len(tab)==0 else tab[-1]
-        temp_cell = None if len(cell)==0  else cell[-1]
-        self.valid_cell_move(temp_tab, temp_cell)
-        tab.remove(temp_tab)
-        cell.append(temp_tab)
+        """
+        if len(tab) == 0:
+            src_card = None
+        else:
+            src_card = tab[-1]
+        if len(cell) == 0:
+            dest_card = None
+        else:
+            dest_card = cell[-1]
+        if self.valid_cell_move(src_card, dest_card):
+            tab.remove(src_card)
+            cell.append(src_card)
 
     def tableau_to_foundation(self, tab, fnd):
         """
         move card from tableau to foundation
-        """    
-        temp_tab = None if len(tab)==0 else tab[-1]
-        temp_fnd = None if len(fnd)==0  else fnd[-1]
-        self.valid_fnd_move(temp_tab, temp_fnd)
-        tab.remove(temp_tab)
-        fnd.append(temp_tab)
+        """
+        if len(tab) == 0:
+            src_card = None
+        else:
+            src_card = tab[-1]
+        if len(fnd) == 0:
+            dest_card = None
+        else:
+            dest_card = fnd[-1]
+        if self.valid_fnd_move(src_card, dest_card):
+            tab.remove(src_card)
+            fnd.append(src_card)
 
     def tableau_to_tableau(self, tab1, tab2):
         """
         move card from tableau to tableau
-        """    
-        temp_tab1 = None if len(tab1)==0 else tab1[-1]
-        temp_tab2 = None if len(tab2)==0  else tab2[-1]
-        self.valid_tab_move(temp_tab1, temp_tab2)
-        tab1.remove(temp_tab1)
-        tab2.append(temp_tab1)
+        """
+        if len(tab1) == 0:
+            src_card = None
+        else:
+            src_card = tab1[1]
+        if len(tab2) == 0:
+            dest_card = None
+        else:
+            dest_card = tab2[-1]
+        if self.valid_tab_move(src_card, dest_card):
+            tab1.remove(src_card)
+            tab2.append(src_card)
 
     def cell_to_foundation(self, cell, fnd):
         """
         move card from cell to foundation
-        """    
-        temp_cell = None if len(cell)==0 else cell[-1]
-        temp_fnd = None if len(fnd)==0  else fnd[-1]
-        self.valid_fnd_move(temp_cell, temp_fnd)
-        cell.remove(temp_cell)
-        fnd.append(temp_cell)
+        """
+        if len(cell) == 0:
+            src_card = None
+        else:
+            src_card = cell[-1]
+        if len(fnd) == 0:
+            dest_card = None
+        else:
+            dest_card = fnd[-1]
+        if self.valid_fnd_move(src_card, dest_card):
+            cell.remove(src_card)
+            fnd.append(src_card)
 
     def cell_to_tableau(self, cell, tab):
         """
         Add your function header here.
-        """    
-        temp_cell = None if len(cell)==0 else cell[-1]
-        temp_tab = None if len(tab)==0  else tab[-1]
-        self.valid_tab_move(temp_cell, temp_tab)
-        cell.remove(temp_cell)
-        tab.append(temp_cell)
+        """
+        if len(cell) == 0:
+            src_card = None   # source card
+        else:
+            src_card = cell[-1]
+        if len(tab) == 0:
+            dest_card = None   # destination card
+        else:
+            dest_card = tab[-1]
+        if self.valid_tab_move(src_card, dest_card):
+            cell.remove(src_card)
+            tab.append(dest_card)
 
     def is_winner(self):
         """
-        Is player win the game?
+        Decide if player win the game?
         """ 
         win = True   # win flag
         for foundation in self.foundations:
@@ -139,45 +175,52 @@ class NotFreecell(object):
     def parse_command(self, command):
         """parse the command, get choice, source and destination"""
         choices = ["TF", "TC", "TT", "CF", "CT"]
-        arr = re.split(r"\s+", command.strip())  # parse string to arr
+        arr = command.strip().split()  # parse string to arr
         x = 0 # store source position
         y = 0 # store destination position
         choice = "" # store choice
         if len(arr) == 3:
             # handle exception
-            if arr[0].upper() not in choices or not isinstance(x, int) or not isinstance(y, int):
-                raise RuntimeError("Arguments are wrong, Please input again")
+            if arr[0].upper() not in choices or not arr[1].isdigit() or not arr[2].isdigit():
+                print("Arguments are wrong, Please input again")
+                choice = None
             else:
                 choice = arr[0].upper()
                 x = int(arr[1])
                 y = int(arr[2])
         else:
-            raise RuntimeError("Command can't been parsed")
+            choice = None
+            print("Invalid Command: lack of arguments")
         return choice, x, y
 
     def move(self, choice, x, y):
         """move card"""
         if choice == "TC":
+            # move card from tableau to cell
             tab = self.tableaus[x]   # source position from tableaus
             cell = self.cells[y]     # destination position from cells
-            selff.tableau_to_cell(tab, cell)  # move card from source to destination
+            self.tableau_to_cell(tab, cell)  # move card from source to destination
             return
         if choice == "TF":
+            # move card from tableau to foundation
             tab = self.tableaus[x]       # source position frmo tableaus
             fnd = self.foundations[y]    # destination in the foundations
             self.tableau_to_foundation(tab, fnd) # move card from source to destination
             return
         if choice == "TT":
+            # move card from tableau to tableau
             tab1 = self.tableaus[x]      # source position from tableaus
             tab2 = self.tableaus[y]      # destination position in the tableaus
             self.tableau_to_tableau(tab1, tab2)  # move card from source to destination
             return
         if choice == "CF":
+            # move card from cell to foundation
             cell = self.cells[x]        # source position in cells
             fnd = self.foundations[y]   # destination position in the foundations
             self.cell_to_foundation(cell, fnd)   # move card from source to destination
             return
         if choice == "CT":
+            # move card from cell to tableau
             cell = self.cells[x]       # source position in cells
             tab = self.tableaus[y]     # destination position in foundations
             self.cell_to_tableau(cell, tab)  # movoe card from source to destination
@@ -191,27 +234,30 @@ class NotFreecell(object):
         print("=======Cells========  ====Foundations=====")
         print("---1----2----3----4--  --1----2----3----4--")
         print(" ", end="")
-        temp_cells = []
+        cells = []  # store 4 cell characters
         for cell in self.cells:
             if len(cell) == 0:
-                temp_cells.append("")
+                cells.append("")
             else:
-                temp_cells.append(str(cell[-1]))
-        temp_foundations = []
+                cells.append(str(cell[-1]))
+        foundations = [] # store 4 foundation characters
         for foundation in self.foundations:
             if len(foundation) == 0:
-                temp_foundations.append("")
+                foundations.append("")
             else:
-                temp_foundations.append(str(foundation[-1]))
-        # to print a card using formatting, convert it to string:
-        label1 = "[{0[0]:>3}][{0[1]:>3}][{0[2]:>3}][{0[3]:>3}]  [{1[0]:>3}][{1[1]:>3}][{1[2]:>3}][{1[3]:>3}]".format(
-            temp_cells, temp_foundations)
-        print(label1)
+                foundations.append(str(foundation[-1]))
+        # lable for cells and foundations
+        label = "[{0[0]:>3}][{0[1]:>3}][{0[2]:>3}][{0[3]:>3}]  [{1[0]:>3}][{1[1]:>3}][{1[2]:>3}][{1[3]:>3}]".format(
+            cells, foundations)
+        print(label)
         # Labels for tableaus
         print("=================tableaus=================")
         print("---1----2----3----4----5----6----7----8---")
-        max_length = max([len(item) for item in self.tableaus])
-        for i in range(0, max_length):
+        height = 0
+        for item in self.tableaus:
+            if height < len(item):
+                height = len(item)
+        for i in range(0, height):
             items = []
             for j in range(0, 8):
                 try:
@@ -219,8 +265,7 @@ class NotFreecell(object):
                 except IndexError as e:
                     data = ""
                 items.append(data)
-            label = "{0[0]:>5}{0[1]:>5}{0[2]:>5}{0[3]:>5}{0[4]:>5}{0[5]:>5}{0[6]:>5}{0[7]:>5}".format(
-                items)
+            label = "{0[0]:>5}{0[1]:>5}{0[2]:>5}{0[3]:>5}{0[4]:>5}{0[5]:>5}{0[6]:>5}{0[7]:>5}".format(items)
             print(label)
 
 
@@ -228,24 +273,22 @@ class NotFreecell(object):
         #HERE IS THE MAIN BODY OF OUR CODE
         self.display()
         print(MENU)
-        command = input("prompt: ").strip().lower()
+        command = input("Please input the command: ").strip().lower()
         while command != 'q':
             if command == "h":
                 print(MENU)
                 self.display()
-                command = input("prompt: ").strip().lower()
+                command = input("Please input the command: ").strip().lower()
             else:
-                try:
-                    choice, x, y = self.parse_command(command)
+                choice, x, y = self.parse_command(command)
+                if choice is None:
+                    print("Please Try again.\n")
+                else:
                     self.move(choice, x-1, y-1)
                     if self.is_winner():
-                        print("You won the game!")
+                        print("You won!")
                         break
-                # Catch Any RuntimeError
-                except RuntimeError as error_message:
-                    print("{:s}".format(str(error_message)))
-                    print("Try again.\n")
                 self.display()
-                command = input("prompt: ").strip().lower()
+                command = input("Please input the command: ").strip().lower()
 
 NotFreecell().start()
