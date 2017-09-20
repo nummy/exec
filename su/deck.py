@@ -1,12 +1,11 @@
-import random
+ import random
 from card import Card
 
 
 class Deck(object):
-    """ A deck of 52 playing cards. """
 
     def __init__(self, value_start, value_end, number_of_suits):
-        """Initialize the deck to the specified value range and number of suits """
+        """Initialize the deck"""
         self.cards = []  # Store all the cards in a list
         for i in range(value_start - 1, value_end):
             for j in range(number_of_suits):
@@ -33,21 +32,17 @@ class Deck(object):
         return False
 
 
-    def is_empty( self ):
-        """ Return True if deck is empty; False, otherwise """
+    def isEmpty( self ):
+        """ Is The deck emprty? If empty, return True"""
         return len(self.cards) == 0
 
     def __len__( self ):
-        """ Return number of cards"""
+        """ Return the number of cards"""
         return len(self.cards)
 
     def __str__( self ):
         """ Return printable string representing deck"""
         return ", ".join([str(card) for card in self.cards])
-            
-    def __repr__( self ):
-        """ Return string representing deck (for use in shell). """
-        return self.__str__()
 
     def draw(self, cols=13):
         """ display cols cards per row"""
@@ -56,11 +51,11 @@ class Deck(object):
                 print()
             print("{:3s} ".format(str(card)), end="" )
         print()
-        print()
 
     def deal(self):
-        """ Return top card from deck (return None if deck empty). """
+        """ Return top card from deck"""
         if len(self.cards) == 0:
+            # return None if no card in the deck
             return None
         else:
             return self.cards.pop()
