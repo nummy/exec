@@ -69,7 +69,8 @@ class NotFreecell(object):
             else:
                 if src_card.get_face() != dest_card.get_face()-1:
                     print("Invalid move: Wrong face") 
-                    return True
+                    return False
+                return True
 
     def valid_cell_move(self, src_card, dest_card):
         """
@@ -157,6 +158,8 @@ class NotFreecell(object):
             dest_card = None   # destination card
         else:
             dest_card = tab[-1]
+        print(src_card)
+        print(dest_card)
         if self.valid_tab_move(src_card, dest_card):
             cell.remove(src_card)
             tab.append(dest_card)
@@ -270,16 +273,12 @@ class NotFreecell(object):
 
 
     def start(self):
-        #HERE IS THE MAIN BODY OF OUR CODE
+        # start the game
         self.display()
         print(MENU)
         command = input("Please input the command: ").strip().lower()
         while command != 'q':
-            if command == "h":
-                print(MENU)
-                self.display()
-                command = input("Please input the command: ").strip().lower()
-            else:
+            if command != "h":
                 choice, x, y = self.parse_command(command)
                 if choice is None:
                     print("Please Try again.\n")
@@ -289,6 +288,9 @@ class NotFreecell(object):
                         print("You won!")
                         break
                 self.display()
-                command = input("Please input the command: ").strip().lower()
+            else:
+                print(MENU)
+                self.display()
+            command = input("Please input the command: ").strip().lower()
 
 NotFreecell().start()
