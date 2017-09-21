@@ -16,6 +16,7 @@ class Deck(object):
 
     def shuffle(self):
         """ Shuffle deck using shuffle method in random module. """
+        random.seed(0)
         random.shuffle(self.cards)
 
     def add_card(self, card):

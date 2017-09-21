@@ -158,11 +158,9 @@ class NotFreecell(object):
             dest_card = None   # destination card
         else:
             dest_card = tab[-1]
-        print(src_card)
-        print(dest_card)
         if self.valid_tab_move(src_card, dest_card):
             cell.remove(src_card)
-            tab.append(dest_card)
+            tab.append(src_card)
 
     def is_winner(self):
         """
