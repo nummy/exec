@@ -109,8 +109,25 @@ DROP TABLE fooditem
 
 -- Task 2.1
 -- Add to your database four DINER records and their associated FS_DINER records
+-- table no: 1 2 3 4 
+-- value： diner, diner_payment_due, seat_no,completed, table no 
+INSERT INTO DINER VALUES (1, 24.00, 1, "01-May-1995", "01-May-1995", 1);
+INSERT INTO DINER VALUES (2, 57.00, 2, "02-May-1995", "02-May-1995", 1);
+INSERT INTO DINER VALUES (3, 56.00, 3, "03-May-1995", "03-May-1995", 1);
+INSERT INTO DINER VALUES (4, 22.00, 1, "04-May-1995", "04-May-1995", 1);
 
+-- value： diner_no, food_item_no, food_serve_size, fs_diner_no_serve, fs_diner_item_served
+INSERT INTO FS_DINER VALUES (1, 2, "ST", 1, "S");
+INSERT INTO FS_DINER VALUES (1, 3, "ST", 1, "S");
 
+INSERT INTO FS_DINER VALUES (2, 4, "LG", 1, "S");
+INSERT INTO FS_DINER VALUES (2, 10, "ST", 1, "S");
+
+INSERT INTO FS_DINER VALUES (3, 4, "SM", 1, "S");
+INSERT INTO FS_DINER VALUES (3, 5, "ST", 1, "S");
+
+INSERT INTO FS_DINER VALUES (4, 8, "ST", 1, "S");
+INSERT INTO FS_DINER VALUES (4, 9, "ST", 1, "S");
 
 
 -- Task 2.2
@@ -118,13 +135,15 @@ DROP TABLE fooditem
 -- food items and diners to the system. 
 -- - the food item sequence should start at 11 and increment by 1
 -- - the diner sequence should start at 10 and increment by 1
-
+CREATE SEQUENCE food_item__seq START WITH 11 INCREMENT BY 1;
+CREATE SEQUENCE diner_seq START WITH 10 INCREMENT BY 1;
 
 
 
 -- Task 2.3    
 --  Provide the drop sequence statements for the two sequences you created in  Q2.1 
-
+DROP SEQUENCE food_item__seq;
+DROP SEQUENCE diner_seq;
 
 
 
