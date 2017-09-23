@@ -156,7 +156,9 @@ DROP SEQUENCE diner_seq;
 --  Add a new DESSERT to the Monash food menu - you will need to research some
 -- meaningful data to be able to add this item.  DESSERT's are food_type 'D' and are 
 -- only served in standard 'ST' serve sizes.
-
+INSERT INTO FOODITEM VALUES (food_item__seq.nextval,'Sticky Date Pudding','Caramel sauce, double cream, ice-cream','D');
+INSERT INTO DESSERT VALUES (7,'N');
+INSERT INTO FOOD_SERVE VALUES (7,'ST',1764,14);
 
 
 
