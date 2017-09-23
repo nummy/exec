@@ -20,6 +20,70 @@
 -- ======================
 
 -- Task 1.1
+CREATE TABLE fs_diner (
+    diner_no        NUMBER(8) NOT NULL,
+    food_item_no    NUMBER(4) NOT NULL,
+    food_serve_size CHAR(2 BYTE) NOT NULL,
+    bev_alcohol_level   NUMBER(3,1) NOT NULL,
+    fs_diner_no_serves  NUMBER(1) NOT NULL,
+    fs_diner_item_served CHAR(1 BYTE) NOT NULL
+);
+
+
+ALTER TABLE fs_diner
+    ADD CONSTRAINT food_serve_size_chk CHECK (
+        food_serve_size IN (
+            'LG','SM','ST'
+        )
+    );
+
+ALTER TABLE fs_diner
+    ADD CONSTRAINT fs_diner_item_served_chk CHECK (
+        fs_diner_item_served IN (
+            'S','O'
+        )
+    );
+
+COMMENT ON COLUMN fs_diner.diner_no IS
+    'Diner identifier';
+
+COMMENT ON COLUMN fs_diner.food_item_no IS
+    'Identifier for a particular menu item';
+
+COMMENT ON COLUMN fs_diner.food_serve_size IS
+    'Food serve size - must be SM,ST or LG';
+
+COMMENT ON COLUMN fs_diner.bev_alcohol_level IS
+    'Alcoholic content of beverage';
+
+
+COMMENT ON COLUMN fs_diner.fs_diner_no_serves IS
+    ' the number of serves diners have ordered';
+
+COMMENT ON COLUMN fs_diner.fs_diner_item_served IS
+    'The status of the food item';
+
+
+-- ADD PK CONSTRAINT
+ALTER TABLE fs_diner ADD CONSTRAINT fs_diner_pk PRIMARY KEY ( 
+    dinerr_no, 
+    food_item_no,
+    food_serve_size 
+);
+
+-- ADD FK CONSTRAINT
+ALTER TABLE fs_diner
+    ADD CONSTRAINT fs_diner_diner_fk FOREIGN KEY ( dinner_no )
+        REFERENCES diner ( dinner_no )
+    NOT DEFERRABLE; 
+
+
+ALTER TABLE fs_diner
+    ADD CONSTRAINT fs_diner_food_serve_fk FOREIGN KEY ( food_item_no, food_serve_size )
+        REFERENCES food_serve ( food_item_no, food_serve_size )
+    NOT DEFERRABLE; 
+
+
 
 
 
@@ -27,7 +91,16 @@
 -- Task 1.2
 -- drop table statements
 -- here you must NOT use CASCADE constraints
-
+-- TODO
+DROP TABLE dessert;
+DROP TABLE main;
+DROP TABLE entree;
+DROP TABLE beverage;
+DROP TABLE fs_diner;
+DROP TABLE diner;
+DROP TABLE table_details;
+DROP TABLE food_serve;
+DROP TABLE fooditem
 
 
 
