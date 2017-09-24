@@ -242,8 +242,8 @@ class Sudoku(object):
     
 
     def get_marked_digits(self, grids, row, col):
-        start_row = row // 3
-        start_col = col // 3
+        start_row = (row // 3)*3
+        start_col = (col // 3)*3
         box = self.get_box(grids, start_row, start_col)
         box_set = set()
         for item in box:
@@ -256,11 +256,6 @@ class Sudoku(object):
         col_set = set()
         for i in range(9):
             col_set.add(grids[i][col])
-
-        if row == 0 and col == 6:
-            print(box)
-            print(box_set)
-            print(start_row, start_col)
         return set(range(1,10)) - box_set -row_set - col_set
 
     def fill_marked_digit(self, row):
@@ -309,8 +304,6 @@ class Sudoku(object):
                 if digit == 0:
                     marked_digits = self.get_marked_digits(grids, i, j)
                     marked_grids[i].append(marked_digits)
-                    if i == 0 and j == 6:
-                        print(marked_digits)
                 else:
                     marked_grids[i].append(digit)
         output = HEADER
@@ -325,7 +318,6 @@ class Sudoku(object):
                 output += " ".join(arr[6:9]) + "\n"
             if i != 8:
                 output += "\n"
-
         output += FOOTER
         filename = self.name + "_marked1.tex"
         fp = open(filename, "w")
@@ -343,4 +335,4 @@ class Sudoku(object):
         pass
 
 
-Sudoku("./test/sudoku_3.txt").marked_tex_output()
+Sudoku("./test/sudoku_5.txt").marked_tex_output()
