@@ -21,7 +21,7 @@ public class Square{
 
 
     public int getWidth(){
-        return with;
+        return width;
     }
 
     /*
