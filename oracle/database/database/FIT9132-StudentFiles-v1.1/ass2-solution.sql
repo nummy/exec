@@ -29,13 +29,6 @@ CREATE TABLE fs_diner (
 
 
 ALTER TABLE fs_diner
-    ADD CONSTRAINT food_serve_size_chk CHECK (
-        food_serve_size IN (
-            'LG','SM','ST'
-        )
-    );
-
-ALTER TABLE fs_diner
     ADD CONSTRAINT fs_diner_item_served_chk CHECK (
         fs_diner_item_served IN (
             'S','O'
@@ -61,15 +54,15 @@ COMMENT ON COLUMN fs_diner.fs_diner_item_served IS
 
 -- ADD PK CONSTRAINT
 ALTER TABLE fs_diner ADD CONSTRAINT fs_diner_pk PRIMARY KEY ( 
-    dinerr_no, 
+    diner_no, 
     food_item_no,
     food_serve_size 
 );
 
 -- ADD FK CONSTRAINT
 ALTER TABLE fs_diner
-    ADD CONSTRAINT fs_diner_diner_fk FOREIGN KEY ( dinner_no )
-        REFERENCES diner ( dinner_no )
+    ADD CONSTRAINT fs_diner_diner_fk FOREIGN KEY ( diner_no )
+        REFERENCES diner ( diner_no )
     NOT DEFERRABLE; 
 
 
@@ -95,7 +88,7 @@ DROP TABLE fs_diner;
 DROP TABLE diner;
 DROP TABLE table_details;
 DROP TABLE food_serve;
-DROP TABLE fooditem
+DROP TABLE fooditem;
 
 
 
@@ -105,24 +98,24 @@ DROP TABLE fooditem
 -- Task 2.1
 -- Add to your database four DINER records and their associated FS_DINER records
 -- table no: 1 2 3 4 
--- value： diner, diner_payment_due, seat_no,completed, table no 
-INSERT INTO DINER VALUES (1, 24.00, 1, to_date("01-May-1995 11:30", "dd-Mon-yyyy hh24:mi"), to_date("01-May-1995 12:17", "dd-Mon-yyyy hh24:mi"), 1);
-INSERT INTO DINER VALUES (2, 57.00, 2, to_date("02-May-1995 18:30", "dd-Mon-yyyy hh24:mi"), to_date("02-May-1995 19:25", "dd-Mon-yyyy hh24:mi"), 1);
-INSERT INTO DINER VALUES (3, 56.00, 3, to_date("03-May-1995 11:48", "dd-Mon-yyyy hh24:mi"), to_date("03-May-1995 12:24", "dd-Mon-yyyy hh24:mi"), 1);
-INSERT INTO DINER VALUES (4, 22.00, 1, to_date("04-May-1995 11:56", "dd-Mon-yyyy hh24:mi"), to_date("04-May-1995 12:31", "dd-Mon-yyyy hh24:mi"), 1);
+-- value： diner, diner_payment_due, seat_no, seated, completed, table no 
+INSERT INTO DINER VALUES (1, 24.00, 1, to_date('2017-05-01 11:30', 'yyyy-mm-dd hh24:mi'), to_date('2017-05-01 12:17', 'yyyy-mm-dd hh24:mi'), 1);
+INSERT INTO DINER VALUES (2, 57.00, 2, to_date('2017-05-02 11:42', 'yyyy-mm-dd hh24:mi'), to_date('2017-05-02 12:25', 'yyyy-mm-dd hh24:mi'), 1);
+INSERT INTO DINER VALUES (3, 56.00, 3, to_date('2017-05-03 18:20', 'yyyy-mm-dd hh24:mi'), to_date('2017-05-03 19:37', 'yyyy-mm-dd hh24:mi'), 1);
+INSERT INTO DINER VALUES (4, 22.00, 1, to_date('2017-05-04 18:34', 'yyyy-mm-dd hh24:mi'), to_date('2017-05-04 19:40', 'yyyy-mm-dd hh24:mi'), 1);
 
 -- value： diner_no, food_item_no, food_serve_size, fs_diner_no_serve, fs_diner_item_served
-INSERT INTO FS_DINER VALUES (1, 2, "ST", 1, "S");
-INSERT INTO FS_DINER VALUES (1, 3, "ST", 1, "S");
+INSERT INTO FS_DINER VALUES (1, 2, 'ST', 1, 'S');
+INSERT INTO FS_DINER VALUES (1, 3, 'ST', 1, 'S');
 
-INSERT INTO FS_DINER VALUES (2, 4, "LG", 1, "S");
-INSERT INTO FS_DINER VALUES (2, 10, "ST", 1, "S");
+INSERT INTO FS_DINER VALUES (2, 4, 'LG', 1, 'S');
+INSERT INTO FS_DINER VALUES (2, 10, 'ST', 1, 'S');
 
-INSERT INTO FS_DINER VALUES (3, 4, "SM", 1, "S");
-INSERT INTO FS_DINER VALUES (3, 5, "ST", 1, "S");
+INSERT INTO FS_DINER VALUES (3, 4, 'SM', 1, 'S');
+INSERT INTO FS_DINER VALUES (3, 5, 'ST', 1, 'S');
 
-INSERT INTO FS_DINER VALUES (4, 8, "ST", 1, "S");
-INSERT INTO FS_DINER VALUES (4, 9, "ST", 1, "S");
+INSERT INTO FS_DINER VALUES (4, 8, 'ST', 1, 'S');
+INSERT INTO FS_DINER VALUES (4, 9, 'ST', 1, 'S');
 
 
 -- Task 2.2
@@ -152,8 +145,8 @@ DROP SEQUENCE diner_seq;
 -- meaningful data to be able to add this item.  DESSERT's are food_type 'D' and are 
 -- only served in standard 'ST' serve sizes.
 INSERT INTO FOODITEM VALUES (food_item__seq.nextval,'Banana Split','Banana, double cream, ice-cream','D');
-INSERT INTO DESSERT VALUES (food_item__seq.curval,'N');
-INSERT INTO FOOD_SERVE VALUES (food_item__seq.culval,'ST',1324,15);
+INSERT INTO DESSERT VALUES (food_item__seq.currval,'N');
+INSERT INTO FOOD_SERVE VALUES (food_item__seq.currval,'ST',1324,15);
 
 
 
@@ -161,9 +154,9 @@ INSERT INTO FOOD_SERVE VALUES (food_item__seq.culval,'ST',1324,15);
 -- Monash food has decided to increase the price charged for all standard serve  
 -- ('ST') main food items ('M' food type) by 15%, make this change in the database
 UPDATE food_serve SET food_serve_cost=food_serve_cost*1.15 WHERE 
-    food_serve_size="ST" AND 
+    food_serve_size='ST' AND 
     food_item_no IN (
-    SELECT food_item_no FROM fooditem WHERE food_type = "M");
+    SELECT food_item_no FROM fooditem WHERE food_type = 'M');
 
 
 
@@ -179,14 +172,14 @@ INSERT INTO DINER VALUES(diner_seq.nextval, 0, 3, sysdate, null, 1);
 -- entrees. Entrees are only available in a standard 'ST' size. Add this data to the 
 -- Monash Food System for this diner. The food item has not been served as yet, this is 
 -- an order only
-INSERT INTO FS_DINER VALUES(diner_seq.culval, 1, "ST", 2, "O");
+INSERT INTO FS_DINER VALUES(diner_seq.currval, 1, 'ST', 2, 'O');
 
 
 
 -- Task 3.3 (c) Some time after this order has been recorded the 'Bruschetta' are served to 
 -- this diner - update the database to record this service. 
 -- dinerr_no, food_item_no, food_serve_size 
-UPDATE DINER SET fs_diner_item_served="S" WHERE diner_no=diner_seq.curval AND food_item_no=1 AND food_serve_size="ST";
+UPDATE FS_DINER SET fs_diner_item_served='S' WHERE diner_no=10 AND food_item_no=1 AND food_serve_size='ST';
 
 
 
@@ -212,10 +205,12 @@ CREATE TABLE diner_history (
     email               VARCHAR2(80 BYTE)
 );
 
+ALTER TABLE diner_history ADD CONSTRAINT diner_history_pk PRIMARY KEY ( diner_no );
 
-INSERT INTO TABLE diner_history VALUES 
-    SELECT diner_no, diner_payment_due, diner_seated, diner_completed, name, contact, email 
-    FROM diner;
+INSERT INTO DINER_HISTORY 
+SELECT diner_no, diner_payment_due, diner_seated, diner_completed, name, contact, email 
+FROM diner;
+
 TRUNCATE TABLE diner;
 
 CREATE TABLE fs_diner_history (
@@ -229,16 +224,17 @@ CREATE TABLE fs_diner_history (
 
 
 ALTER TABLE fs_diner_history ADD CONSTRAINT fs_diner_history_pk PRIMARY KEY ( 
-    dinerr_no, 
+    diner_no, 
     food_item_no,
     food_serve_size 
 );
 
 -- ADD FK CONSTRAINT
 ALTER TABLE fs_diner_history
-    ADD CONSTRAINT fs_diner_history_diner_fk FOREIGN KEY ( dinner_no )
-        REFERENCES diner_history ( dinner_no )
+    ADD CONSTRAINT fs_diner_history_diner_fk FOREIGN KEY (diner_no)
+        REFERENCES diner_history (diner_no)
     NOT DEFERRABLE; 
+
 
 
 ALTER TABLE fs_diner_history
@@ -246,8 +242,10 @@ ALTER TABLE fs_diner_history
         REFERENCES food_serve ( food_item_no, food_serve_size )
     NOT DEFERRABLE; 
 
-INSERT INTO TABLE fs_diner_history VALUES 
-    SELECT diner_no, food_item_no, food_serve_size, fs_diner_no_serves, fs_diner_item_served 
-    FROM fs_diner;
+INSERT INTO fs_diner_history 
+SELECT diner_no, food_item_no, food_serve_size, fs_diner_no_serves, fs_diner_item_served 
+FROM fs_diner;
+
+
 TRUNCATE TABLE fs_diner;
 --========================= END OF ASS2-SOLUTION.SQL ==================================

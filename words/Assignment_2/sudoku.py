@@ -31,7 +31,34 @@ class Sudoku(object):
         and has no digit that occurs twice on the same row, on the same column 
         or in the same box
         """
-        pass
+        # check rows
+        for row in self.grids:
+            if len(set(row)) != len(row):
+                return "There is clearly no solution."
+        # check columns
+        for i in range(9):
+            cols = []
+            for j in range(9):
+                cols.append(self.grids[j][i])
+            if len(set(cols)) != len(cols):
+                return "There is clearly no solution."
+        # check boxes
+        for i in range(3):
+            for j in range(3):
+                start_row = i*3
+                start_col = j*3
+                box  = []
+                for m in range(3):
+                    for n in range(3):
+                        row = start_row + m
+                        col = start_col + n
+                        box.append(self.grids[row][col])
+                print(box)
+
+
+
+
+
 
     def bare_tex_output(self):
         """
@@ -64,4 +91,4 @@ class Sudoku(object):
         """
         pass
 
-Sudoku("./test/sudoku_1.txt")
+Sudoku("./test/sudoku_1.txt").preassess()
