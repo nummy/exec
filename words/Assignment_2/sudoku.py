@@ -1,3 +1,6 @@
+from collections import Counter
+
+
 class SudokuError(Exception):
     pass
 
@@ -121,6 +124,81 @@ class Sudoku(object):
         fp = open(filename, "w")
         fp.write(output)
 
+    def counter(self):
+        """count the occurence of digit in grids"""
+        c = Counter()
+        for row in self.grids:
+            c.update(row)
+        data = list(c.items())
+        data = [item[0] for item in data if item[0]!=0]
+        return data
+
+    def get_box(self, start_row, start_col):
+        """get the box by the position oof first digit in the box"""
+        box  = []
+        for m in range(3):
+            for n in range(3):
+                row = start_row + m
+                col = start_col + n
+                box.append(self.grids[row][col])
+        return box
+
+    def get_forced_cells(self):
+        """Get the forced cells"""
+        digits = self.counter()
+        forced_cells = []
+        for digit in digits:
+            starts = []  # store the positon of the start elem in the box, the digit is not in the box
+            for i in range(3):
+                for j in range(3):
+                    start_row = i*3
+                    start_col = j*3
+                    box = self.get_box(start_row, start_col)
+                    if digit not in box:
+                        starts.append((start_row, start_col))
+            for start in starts:
+                entry_cells = self.get_entry_cell(start[0], start[1], digit)
+                if len(entry_cells) == 1:
+                    forced_cells.append([entry_cells[0], digit])
+        return forced_cells
+
+
+    def get_entry_cell(self, start_row, start_col, digit):
+        """Get the entry cell, if it's the only one ,return the entry position"""
+        empty_cells = []  # store the empty cell position in the box 
+        for i in range(3):
+            row = start_row + i
+            for j in range(3):
+                col = start_col + j
+                if self.grids[row][col] == 0:
+                    empty_cells.append((row, col))
+        positions = self.get_digit_position(digit)
+        for position in positions:
+            digit_row = position[0]
+            digit_col = position[1]
+            empty_cells = self.remove_cell(empty_cells, digit_row, digit_col)
+        return empty_cells
+
+    def remove_cell(self, cells, row, col):
+        res = []
+        for cell in cells:
+            if cell[0] == row:
+                pass
+            elif cell[1] == col:
+                pass
+            else:
+                res.append(cell)
+        return res
+                
+
+    def get_digit_position(self, digit):
+        positions = []
+        for i in range(9):
+            for j in range(9):
+                if self.grids[i][j] == digit:
+                    positions.append((i, j))
+        return positions
+
 
 
     def forced_tex_ouptut(self):
@@ -128,7 +206,29 @@ class Sudoku(object):
         outputs some Latex code to a file, use these code to produce a pictorial 
         representation of the grid to which the forced digits technique has been applied; 
         """
-        pass
+        forced_cells = self.get_forced_cells()
+        while len(forced_cells) > 0:
+            for cell, digit in forced_cells:
+                self.grids[cell[0]][cell[1]] = digit
+            forced_cells = self.get_forced_cells()
+        output = HEADER
+        for i in range(9):
+            output += "% Line {}\n".format(i+1)
+            arr = self.fill_digit(self.grids[i])
+            output += " ".join(arr[:3]) + "\n"
+            output += " ".join(arr[3:6]) + "\n"
+            if i%3 == 2:
+                output += " ".join(arr[6:9]) + "\\hline\n"
+            else:
+                output += " ".join(arr[6:9]) + "\n"
+            if i != 8:
+                output += "\n"
+
+        output += FOOTER
+        filename = self.name + "_forced1.tex"
+        fp = open(filename, "w")
+        fp.write(output)
+
 
     def marked_tex_output(self):
         """
@@ -148,4 +248,4 @@ class Sudoku(object):
         pass
 
 
-Sudoku("./test/sudoku_4.txt").bare_tex_output()
+Sudoku("./test/sudoku_5.txt").forced_tex_ouptut()
