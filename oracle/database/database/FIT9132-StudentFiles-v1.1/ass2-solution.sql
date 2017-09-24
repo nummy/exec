@@ -11,7 +11,6 @@
 	
 	Comments for your marker:
 	
-	
 
 */
 
@@ -24,7 +23,6 @@ CREATE TABLE fs_diner (
     diner_no        NUMBER(8) NOT NULL,
     food_item_no    NUMBER(4) NOT NULL,
     food_serve_size CHAR(2 BYTE) NOT NULL,
-    bev_alcohol_level   NUMBER(3,1) NOT NULL,
     fs_diner_no_serves  NUMBER(1) NOT NULL,
     fs_diner_item_served CHAR(1 BYTE) NOT NULL
 );
@@ -52,9 +50,6 @@ COMMENT ON COLUMN fs_diner.food_item_no IS
 
 COMMENT ON COLUMN fs_diner.food_serve_size IS
     'Food serve size - must be SM,ST or LG';
-
-COMMENT ON COLUMN fs_diner.bev_alcohol_level IS
-    'Alcoholic content of beverage';
 
 
 COMMENT ON COLUMN fs_diner.fs_diner_no_serves IS
@@ -111,10 +106,10 @@ DROP TABLE fooditem
 -- Add to your database four DINER records and their associated FS_DINER records
 -- table no: 1 2 3 4 
 -- value： diner, diner_payment_due, seat_no,completed, table no 
-INSERT INTO DINER VALUES (1, 24.00, 1, "01-May-1995", "01-May-1995", 1);
-INSERT INTO DINER VALUES (2, 57.00, 2, "02-May-1995", "02-May-1995", 1);
-INSERT INTO DINER VALUES (3, 56.00, 3, "03-May-1995", "03-May-1995", 1);
-INSERT INTO DINER VALUES (4, 22.00, 1, "04-May-1995", "04-May-1995", 1);
+INSERT INTO DINER VALUES (1, 24.00, 1, to_date("01-May-1995 11:30", "dd-Mon-yyyy hh24:mi"), to_date("01-May-1995 12:17", "dd-Mon-yyyy hh24:mi"), 1);
+INSERT INTO DINER VALUES (2, 57.00, 2, to_date("02-May-1995 18:30", "dd-Mon-yyyy hh24:mi"), to_date("02-May-1995 19:25", "dd-Mon-yyyy hh24:mi"), 1);
+INSERT INTO DINER VALUES (3, 56.00, 3, to_date("03-May-1995 11:48", "dd-Mon-yyyy hh24:mi"), to_date("03-May-1995 12:24", "dd-Mon-yyyy hh24:mi"), 1);
+INSERT INTO DINER VALUES (4, 22.00, 1, to_date("04-May-1995 11:56", "dd-Mon-yyyy hh24:mi"), to_date("04-May-1995 12:31", "dd-Mon-yyyy hh24:mi"), 1);
 
 -- value： diner_no, food_item_no, food_serve_size, fs_diner_no_serve, fs_diner_item_served
 INSERT INTO FS_DINER VALUES (1, 2, "ST", 1, "S");
@@ -156,16 +151,19 @@ DROP SEQUENCE diner_seq;
 --  Add a new DESSERT to the Monash food menu - you will need to research some
 -- meaningful data to be able to add this item.  DESSERT's are food_type 'D' and are 
 -- only served in standard 'ST' serve sizes.
-INSERT INTO FOODITEM VALUES (food_item__seq.nextval,'Sticky Date Pudding','Caramel sauce, double cream, ice-cream','D');
-INSERT INTO DESSERT VALUES (7,'N');
-INSERT INTO FOOD_SERVE VALUES (7,'ST',1764,14);
+INSERT INTO FOODITEM VALUES (food_item__seq.nextval,'Banana Split','Banana, double cream, ice-cream','D');
+INSERT INTO DESSERT VALUES (food_item__seq.curval,'N');
+INSERT INTO FOOD_SERVE VALUES (food_item__seq.culval,'ST',1324,15);
 
 
 
 -- Task 3.2
 -- Monash food has decided to increase the price charged for all standard serve  
 -- ('ST') main food items ('M' food type) by 15%, make this change in the database
-
+UPDATE food_serve SET food_serve_cost=food_serve_cost*1.15 WHERE 
+    food_serve_size="ST" AND 
+    food_item_no IN (
+    SELECT food_item_no FROM fooditem WHERE food_type = "M");
 
 
 
@@ -173,7 +171,7 @@ INSERT INTO FOOD_SERVE VALUES (7,'ST',1764,14);
 
 -- Task 3.3 (a) A new diner has just arrived and been seated at Table 1 seat 3. Update the  
 -- database to seat this diner
-
+INSERT INTO DINER VALUES(diner_seq.nextval, 0, 3, sysdate, null, 1);
 
 
 
@@ -181,26 +179,75 @@ INSERT INTO FOOD_SERVE VALUES (7,'ST',1764,14);
 -- entrees. Entrees are only available in a standard 'ST' size. Add this data to the 
 -- Monash Food System for this diner. The food item has not been served as yet, this is 
 -- an order only
-
+INSERT INTO FS_DINER VALUES(diner_seq.culval, 1, "ST", 2, "O");
 
 
 
 -- Task 3.3 (c) Some time after this order has been recorded the 'Bruschetta' are served to 
 -- this diner - update the database to record this service. 
-
+-- dinerr_no, food_item_no, food_serve_size 
+UPDATE DINER SET fs_diner_item_served="S" WHERE diner_no=diner_seq.curval AND food_item_no=1 AND food_serve_size="ST";
 
 
 
 -- Task 4 Database Structure
 -- =========================
 -- Task 4.1 Collection of Diner information
-
+ALTER TABLE diner
+    ADD(name VARCHAR2(50 BYTE),
+        contact VARCHAR2(50 BYTE),
+        email VARCHAR2(80 BYTE)
+    );
 
 
 
 -- Task 4.2 End of financial year DINER and FS_DINER archive
+CREATE TABLE diner_history (
+    diner_no            NUMBER(8) NOT NULL,
+    diner_payment_due   NUMBER(6,2) NOT NULL,
+    diner_seated        DATE NOT NULL,
+    diner_completed     DATE,
+    name                VARCHAR2(50 BYTE),
+    contact             VARCHAR2(50 BYTE),
+    email               VARCHAR2(80 BYTE)
+);
+
+
+INSERT INTO TABLE diner_history VALUES 
+    SELECT diner_no, diner_payment_due, diner_seated, diner_completed, name, contact, email 
+    FROM diner;
+TRUNCATE TABLE diner;
+
+CREATE TABLE fs_diner_history (
+    diner_no        NUMBER(8) NOT NULL,
+    food_item_no    NUMBER(4) NOT NULL,
+    food_serve_size CHAR(2 BYTE) NOT NULL,
+    fs_diner_no_serves  NUMBER(1) NOT NULL,
+    fs_diner_item_served CHAR(1 BYTE) NOT NULL
+);
 
 
 
+ALTER TABLE fs_diner_history ADD CONSTRAINT fs_diner_history_pk PRIMARY KEY ( 
+    dinerr_no, 
+    food_item_no,
+    food_serve_size 
+);
 
+-- ADD FK CONSTRAINT
+ALTER TABLE fs_diner_history
+    ADD CONSTRAINT fs_diner_history_diner_fk FOREIGN KEY ( dinner_no )
+        REFERENCES diner_history ( dinner_no )
+    NOT DEFERRABLE; 
+
+
+ALTER TABLE fs_diner_history
+    ADD CONSTRAINT fs_diner_history_food_serve_fk FOREIGN KEY ( food_item_no, food_serve_size )
+        REFERENCES food_serve ( food_item_no, food_serve_size )
+    NOT DEFERRABLE; 
+
+INSERT INTO TABLE fs_diner_history VALUES 
+    SELECT diner_no, food_item_no, food_serve_size, fs_diner_no_serves, fs_diner_item_served 
+    FROM fs_diner;
+TRUNCATE TABLE fs_diner;
 --========================= END OF ASS2-SOLUTION.SQL ==================================
