@@ -138,8 +138,8 @@ class Sudoku(object):
         """get the box by the position oof first digit in the box"""
         box  = []
         for m in range(3):
+            row = start_row + m
             for n in range(3):
-                row = start_row + m
                 col = start_col + n
                 box.append(grids[row][col])
         return box
@@ -163,9 +163,8 @@ class Sudoku(object):
                     forced_cells.append([entry_cells[0], digit])
         return forced_cells
 
-
-    def get_entry_cell(self, grids, start_row, start_col, digit):
-        """Get the entry cell, if it's the only one ,return the entry position"""
+    def get_empty_cells(self, grids, start_row, start_col):
+        """Get the empty cells for the box"""
         empty_cells = []  # store the empty cell position in the box 
         for i in range(3):
             row = start_row + i
@@ -173,6 +172,11 @@ class Sudoku(object):
                 col = start_col + j
                 if grids[row][col] == 0:
                     empty_cells.append((row, col))
+        return empty_cells
+
+    def get_entry_cell(self, grids, start_row, start_col, digit):
+        """Get the entry cell, if it's the only one ,return the entry position"""
+        empty_cells = self.get_empty_cells(grids, start_row, start_col)
         positions = self.get_digit_position(grids, digit)
         for position in positions:
             digit_row = position[0]
@@ -235,16 +239,60 @@ class Sudoku(object):
         fp = open(filename, "w")
         fp.write(output)
 
+    
+
+    def get_marked_digits(self, grids, row, col):
+        start_row = row // 3
+        start_col = col // 3
+        box = self.get_box(grids, start_row, start_col)
+        box_set = set()
+        for item in box:
+            if item != 0:
+                box_set.add(item)
+        row_set = set()
+        for item in grids[row]:
+            if item != 0:
+                row_set.add(item)
+        col_set = set()
+        for i in range(9):
+            col_set.add(grids[i][col])
+
+        if row == 0 and col == 6:
+            print(box)
+            print(box_set)
+            print(start_row, start_col)
+        return set(range(1,10)) - box_set -row_set - col_set
+
     def fill_marked_digit(self, row):
         """Fill digit in for tex output"""
         arr = []
         for elem in row:
-            if elem == 0:
-                arr.append(r"\N{}{}{}{}{} &")
+            if isinstance(elem, set):
+                LT, RT, LB, RB = self.seperate_digits(elem)
+                arr.append(r"\N{%s}{%s}{%s}{%s}{} &" % (LT, RT, LB, RB))
             else:
                 arr.append(r"\N{}{}{}{}{" + str(elem) + "} &")
         arr[-1] = arr[-1].replace("&", "\\\\ \hline")
         return arr
+
+    def seperate_digits(self, digits):
+        LT = []
+        RT = []
+        LB = []
+        RB = []
+        digits = list(digits)
+        digits.sort()
+        for digit in digits:
+            if digit < 3:
+                LT.append(str(digit))
+            elif digit < 5:
+                RT.append(str(digit))
+            elif digit < 7:
+                LB.append(str(digit))
+            else:
+                RB.append(str(digit))
+        return " ".join(LT), " ".join(RT), " ".join(LB), " ".join(RB)
+
 
     def marked_tex_output(self):
         """
@@ -253,7 +301,37 @@ class Sudoku(object):
         and that has been marked;
         """
         grids = self.fill_forced_cells()
-        print(grids)
+        marked_grids = []
+        for i in range(9):
+            marked_grids.append([])
+            for j in range(9):
+                digit = grids[i][j]
+                if digit == 0:
+                    marked_digits = self.get_marked_digits(grids, i, j)
+                    marked_grids[i].append(marked_digits)
+                    if i == 0 and j == 6:
+                        print(marked_digits)
+                else:
+                    marked_grids[i].append(digit)
+        output = HEADER
+        for i in range(9):
+            output += "% Line {}\n".format(i+1)
+            arr = self.fill_marked_digit(marked_grids[i])
+            output += " ".join(arr[:3]) + "\n"
+            output += " ".join(arr[3:6]) + "\n"
+            if i%3 == 2:
+                output += " ".join(arr[6:9]) + "\\hline\n"
+            else:
+                output += " ".join(arr[6:9]) + "\n"
+            if i != 8:
+                output += "\n"
+
+        output += FOOTER
+        filename = self.name + "_marked1.tex"
+        fp = open(filename, "w")
+        fp.write(output)
+
+
 
     def worked_tex_output(self):
         """
@@ -265,4 +343,4 @@ class Sudoku(object):
         pass
 
 
-Sudoku("./test/sudoku_5.txt").marked_tex_output()
+Sudoku("./test/sudoku_3.txt").marked_tex_output()
