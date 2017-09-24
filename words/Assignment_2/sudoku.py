@@ -11,6 +11,8 @@ class Sudoku(object):
         for line in fp:
             line = line.strip()
             line = line.replace(" ", "")
+            if line == "":
+                continue
             if not line.isdigit():
                 raise SudokuError("Incorrect Input")
             if len(line) != 9:
@@ -33,6 +35,7 @@ class Sudoku(object):
         """
         # check rows
         for row in self.grids:
+            row = [item for item in row if item != 0]
             if len(set(row)) != len(row):
                 return "There is clearly no solution."
         # check columns
@@ -40,6 +43,7 @@ class Sudoku(object):
             cols = []
             for j in range(9):
                 cols.append(self.grids[j][i])
+            cols = [item for item in cols if item != 0]
             if len(set(cols)) != len(cols):
                 return "There is clearly no solution."
         # check boxes
@@ -53,7 +57,10 @@ class Sudoku(object):
                         row = start_row + m
                         col = start_col + n
                         box.append(self.grids[row][col])
-                print(box)
+                box = [item for item in box if item != 0]
+                if len(set(box)) != len(box):
+                    return "There is clearly no solution."
+        return "There might be a solution."
 
 
 
@@ -91,4 +98,4 @@ class Sudoku(object):
         """
         pass
 
-Sudoku("./test/sudoku_1.txt").preassess()
+print(Sudoku("./test/sudoku_3.txt").preassess())
