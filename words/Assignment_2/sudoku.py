@@ -1,5 +1,5 @@
 from collections import Counter
-
+import copy
 
 class SudokuError(Exception):
     pass
@@ -92,6 +92,7 @@ class Sudoku(object):
         return "There might be a solution."
 
     def fill_digit(self, row):
+        """Fill digit in for tex output"""
         arr = []
         for elem in row:
             if elem == 0:
@@ -124,28 +125,28 @@ class Sudoku(object):
         fp = open(filename, "w")
         fp.write(output)
 
-    def counter(self):
+    def counter(self, grids):
         """count the occurence of digit in grids"""
         c = Counter()
-        for row in self.grids:
+        for row in grids:
             c.update(row)
         data = list(c.items())
         data = [item[0] for item in data if item[0]!=0]
         return data
 
-    def get_box(self, start_row, start_col):
+    def get_box(self, grids, start_row, start_col):
         """get the box by the position oof first digit in the box"""
         box  = []
         for m in range(3):
             for n in range(3):
                 row = start_row + m
                 col = start_col + n
-                box.append(self.grids[row][col])
+                box.append(grids[row][col])
         return box
 
-    def get_forced_cells(self):
+    def get_forced_cells(self, grids):
         """Get the forced cells"""
-        digits = self.counter()
+        digits = self.counter(grids)
         forced_cells = []
         for digit in digits:
             starts = []  # store the positon of the start elem in the box, the digit is not in the box
@@ -153,26 +154,26 @@ class Sudoku(object):
                 for j in range(3):
                     start_row = i*3
                     start_col = j*3
-                    box = self.get_box(start_row, start_col)
+                    box = self.get_box(grids, start_row, start_col)
                     if digit not in box:
                         starts.append((start_row, start_col))
             for start in starts:
-                entry_cells = self.get_entry_cell(start[0], start[1], digit)
+                entry_cells = self.get_entry_cell(grids, start[0], start[1], digit)
                 if len(entry_cells) == 1:
                     forced_cells.append([entry_cells[0], digit])
         return forced_cells
 
 
-    def get_entry_cell(self, start_row, start_col, digit):
+    def get_entry_cell(self, grids, start_row, start_col, digit):
         """Get the entry cell, if it's the only one ,return the entry position"""
         empty_cells = []  # store the empty cell position in the box 
         for i in range(3):
             row = start_row + i
             for j in range(3):
                 col = start_col + j
-                if self.grids[row][col] == 0:
+                if grids[row][col] == 0:
                     empty_cells.append((row, col))
-        positions = self.get_digit_position(digit)
+        positions = self.get_digit_position(grids, digit)
         for position in positions:
             digit_row = position[0]
             digit_col = position[1]
@@ -180,6 +181,7 @@ class Sudoku(object):
         return empty_cells
 
     def remove_cell(self, cells, row, col):
+        """Remove empty cell if conflicted"""
         res = []
         for cell in cells:
             if cell[0] == row:
@@ -191,30 +193,34 @@ class Sudoku(object):
         return res
                 
 
-    def get_digit_position(self, digit):
+    def get_digit_position(self,grids, digit):
+        """Get the positions of the digits in cells"""
         positions = []
         for i in range(9):
             for j in range(9):
-                if self.grids[i][j] == digit:
+                if grids[i][j] == digit:
                     positions.append((i, j))
         return positions
 
-
+    def fill_forced_cells(self):
+        grids = copy.deepcopy(self.grids)
+        forced_cells = self.get_forced_cells(grids)
+        while len(forced_cells) > 0:
+            for cell, digit in forced_cells:
+                grids[cell[0]][cell[1]] = digit
+            forced_cells = self.get_forced_cells(grids)
+        return grids
 
     def forced_tex_ouptut(self):
         """
         outputs some Latex code to a file, use these code to produce a pictorial 
         representation of the grid to which the forced digits technique has been applied; 
         """
-        forced_cells = self.get_forced_cells()
-        while len(forced_cells) > 0:
-            for cell, digit in forced_cells:
-                self.grids[cell[0]][cell[1]] = digit
-            forced_cells = self.get_forced_cells()
+        grids = self.fill_forced_cells()
         output = HEADER
         for i in range(9):
             output += "% Line {}\n".format(i+1)
-            arr = self.fill_digit(self.grids[i])
+            arr = self.fill_digit(grids[i])
             output += " ".join(arr[:3]) + "\n"
             output += " ".join(arr[3:6]) + "\n"
             if i%3 == 2:
@@ -229,6 +235,16 @@ class Sudoku(object):
         fp = open(filename, "w")
         fp.write(output)
 
+    def fill_marked_digit(self, row):
+        """Fill digit in for tex output"""
+        arr = []
+        for elem in row:
+            if elem == 0:
+                arr.append(r"\N{}{}{}{}{} &")
+            else:
+                arr.append(r"\N{}{}{}{}{" + str(elem) + "} &")
+        arr[-1] = arr[-1].replace("&", "\\\\ \hline")
+        return arr
 
     def marked_tex_output(self):
         """
@@ -236,7 +252,8 @@ class Sudoku(object):
         representation of the grid to which the forced digits technique has been applied 
         and that has been marked;
         """
-        pass
+        grids = self.fill_forced_cells()
+        print(grids)
 
     def worked_tex_output(self):
         """
@@ -248,4 +265,4 @@ class Sudoku(object):
         pass
 
 
-Sudoku("./test/sudoku_5.txt").forced_tex_ouptut()
+Sudoku("./test/sudoku_5.txt").marked_tex_output()
