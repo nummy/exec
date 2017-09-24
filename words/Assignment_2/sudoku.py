@@ -1,10 +1,36 @@
 class SudokuError(Exception):
     pass
 
+HEADER = r"""\documentclass[10pt]{article}
+\usepackage[left=0pt,right=0pt]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{cancel}
+\pagestyle{empty}
+
+\newcommand{\N}[5]{\tikz{\node[label=above left:{\tiny #1},
+                               label=above right:{\tiny #2},
+                               label=below left:{\tiny #3},
+                               label=below right:{\tiny #4}]{#5};}}
+
+\begin{document}
+
+\tikzset{every node/.style={minimum size=.5cm}}
+
+\begin{center}
+\begin{tabular}{||@{}c@{}|@{}c@{}|@{}c@{}||@{}c@{}|@{}c@{}|@{}c@{}||@{}c@{}|@{}c@{}|@{}c@{}||}\hline\hline
+"""
+
+FOOTER = r'''\end{tabular}
+\end{center}
+
+\end{document}
+'''
 
 class Sudoku(object):
     def __init__(self, filename):
         self.filename = filename
+        self.name = filename.replace(".txt", "")
         self.grids = []
         fp = open(filename, "r")
         lines = []
@@ -62,17 +88,40 @@ class Sudoku(object):
                     return "There is clearly no solution."
         return "There might be a solution."
 
-
-
-
-
+    def fill_digit(self, row):
+        arr = []
+        for elem in row:
+            if elem == 0:
+                arr.append(r"\N{}{}{}{}{} &")
+            else:
+                arr.append(r"\N{}{}{}{}{" + str(elem) + "} &")
+        arr[-1] = arr[-1].replace("&", "\\\\ \hline")
+        return arr
 
     def bare_tex_output(self):
         """
         outputs Latex code to a file, use these code to produce a pictorial 
         representation of the grid
         """
-        pass
+        output = HEADER
+        for i in range(9):
+            output += "% Line {}\n".format(i+1)
+            arr = self.fill_digit(self.grids[i])
+            output += " ".join(arr[:3]) + "\n"
+            output += " ".join(arr[3:6]) + "\n"
+            if i%3 == 2:
+                output += " ".join(arr[6:9]) + "\\hline\n"
+            else:
+                output += " ".join(arr[6:9]) + "\n"
+            if i != 8:
+                output += "\n"
+
+        output += FOOTER
+        filename = self.name + "_bare1.tex"
+        fp = open(filename, "w")
+        fp.write(output)
+
+
 
     def forced_tex_ouptut(self):
         """
@@ -98,4 +147,5 @@ class Sudoku(object):
         """
         pass
 
-print(Sudoku("./test/sudoku_3.txt").preassess())
+
+Sudoku("./test/sudoku_4.txt").bare_tex_output()
