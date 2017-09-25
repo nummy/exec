@@ -1,0 +1,66 @@
+import goody
+import inspect
+
+class {type_name}:
+    # __init__ function 
+    {init}
+
+    def __repr__(self):
+        return "{type_name}(%s)" % (",".join([field + '=' + str(self[field]) for field in self._fields]))
+
+    def __getitem__(self, index):
+        if goody.type_as_str(index) == 'int':
+            if index >=0 and index < len(self._fields):
+                return self.__dict__[self._fields[index]]
+            else:
+                raise IndexError()
+        elif goody.type_as_str(index) == 'str':
+            if index in self._fields:
+                return self.__dict__[index]
+            else:
+                raise IndexError()
+        else:
+            raise IndexError()
+
+    # get function, example:get_x, get_y, get_z
+    {get_func}
+    def __eq__(self, other):
+        # eq function 
+        print(goody.type_as_str(other))
+        if goody.type_as_str(other) != 'pnamedtuple_{type_name}.{type_name}':
+            return False
+        if len(self._fields) != len(other._fields):
+            return False
+        for field in self._fields:
+            if self[field] != other[field]:
+                return False
+        return True
+
+    def _replace(self, **kargs):
+        for k, v in kargs.items():
+            if k not in self._fields:
+                raise TypeError("%s is not exist" % k)
+        if self._mutable:
+            for k, w in kargs.items():
+                if k in self._fields:
+                    self.__dict__[k] = v
+            return None
+        else:
+            temp = dict()
+            for field in self._fields:
+                temp[field] = self[field]
+                if field in kargs:
+                    temp[field] = kargs[field]
+            return {type_name}(**temp)
+
+    def __setattr__(self, key, value):
+        calling = inspect.stack()[1]
+        if calling.function == "__init__":
+            self.__dict__[key] = value
+        else:
+            if self._mutable:
+                self.__dict__[key] = value
+            else:
+                raise AttributeError("the pnamedtuple it not mutable")
+
+
