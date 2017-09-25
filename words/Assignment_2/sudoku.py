@@ -144,6 +144,16 @@ class Sudoku(object):
                 box.append(grids[row][col])
         return box
 
+    def get_box_with_position(self, grids, start_row, start_col):
+        """get the box by the position oof first digit in the box"""
+        box  = []
+        for m in range(3):
+            row = start_row + m
+            for n in range(3):
+                col = start_col + n
+                box.append((grids[row][col], (row, col)))
+        return box
+
     def get_forced_cells(self, grids):
         """Get the forced cells"""
         digits = self.counter(grids)
@@ -339,7 +349,7 @@ class Sudoku(object):
         grids = self.fill_forced_cells()
         marked_grids = self.markup_grids(grids)
         visited = []
-        self.get_preemptive_sets(visited, marked_grids)
+        print(self.get_preemptive_sets(visited, marked_grids))
 
 
     def get_preemptive_sets(self,visited, grids):
@@ -347,36 +357,43 @@ class Sudoku(object):
         for i in range(9):
             row  = []
             for index, item in enumerate(grids[i]):
-                row.append((item, i, index))
-            digit_set = self.get_preemptive_set(row)
+                row.append((item, (i, index)))
+            data = self.get_preemptive_set(row)
+            if data and data not in visited:
+                return data
         # check col
         for i in range(9):
             col = []
             for j in range(9):
-                col.append(grids[j][i])
-            print(self.get_preemptive_set(col))
+                col.append((grids[j][i], (j, i)))
+            data = self.get_preemptive_set(col)
+            if data and data not in visited:
+                return data
         # check box
         for i in range(3):
             for j in range(3):
                 start_row = i*3
                 start_col = j*3
-                box = self.get_box(grids, start_row, start_col)
-                print(self.get_preemptive_set(box))
+                box = self.get_box_with_position(grids, start_row, start_col)
+                data = self.get_preemptive_set(box)
+                if data and data not in visited:
+                    return data
+        return None
 
     def get_preemptive_set(self, lst):
-        lst = [item for item in lst if isinstance(item, set)]
-        lst = sorted(lst, key=lambda x:len(x), reverse=True)
+        lst = [item for item in lst if isinstance(item[0], set)]
+        lst = sorted(lst, key=lambda x:len(x[0]), reverse=True)
         while len(lst) != 0:
-            digit_set = lst.pop(0)
-            res = [digit_set]
+            digit_set, position = lst.pop(0)
+            res = [digit_set, [position]]
             m = len(digit_set)
             count = 1
-            for item in lst:
+            for item, position in lst:
                 if item.issubset(digit_set):
                     count += 1
-                    res.append(item)
+                    res[1].append(position)
             if m == count:
-                return digit_set
+                return res
         return None
 
     def isValid(self, grids):
