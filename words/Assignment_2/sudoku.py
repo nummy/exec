@@ -289,13 +289,7 @@ class Sudoku(object):
         return " ".join(LT), " ".join(RT), " ".join(LB), " ".join(RB)
 
 
-    def marked_tex_output(self):
-        """
-        outputs some Latex code to a file, use these codes to to produce a pictorial 
-        representation of the grid to which the forced digits technique has been applied 
-        and that has been marked;
-        """
-        grids = self.fill_forced_cells()
+    def markup_grids(self, grids):
         marked_grids = []
         for i in range(9):
             marked_grids.append([])
@@ -306,6 +300,17 @@ class Sudoku(object):
                     marked_grids[i].append(marked_digits)
                 else:
                     marked_grids[i].append(digit)
+        return marked_grids
+
+
+    def marked_tex_output(self):
+        """
+        outputs some Latex code to a file, use these codes to to produce a pictorial 
+        representation of the grid to which the forced digits technique has been applied 
+        and that has been marked;
+        """
+        grids = self.fill_forced_cells()
+        marked_grids = self.markup_grids(grids)
         output = HEADER
         for i in range(9):
             output += "% Line {}\n".format(i+1)
@@ -331,7 +336,95 @@ class Sudoku(object):
         applied, that has been marked, and to which the preemptive set technique 
         has been applied.
         """
-        pass
+        grids = self.fill_forced_cells()
+        marked_grids = self.markup_grids(grids)
+        visited = []
+        self.get_preemptive_sets(visited, marked_grids)
 
 
-Sudoku("./test/sudoku_5.txt").marked_tex_output()
+    def get_preemptive_sets(self,visited, grids):
+        # check row
+        for i in range(9):
+            row  = []
+            for index, item in enumerate(grids[i]):
+                row.append((item, i, index))
+            digit_set = self.get_preemptive_set(row)
+        # check col
+        for i in range(9):
+            col = []
+            for j in range(9):
+                col.append(grids[j][i])
+            print(self.get_preemptive_set(col))
+        # check box
+        for i in range(3):
+            for j in range(3):
+                start_row = i*3
+                start_col = j*3
+                box = self.get_box(grids, start_row, start_col)
+                print(self.get_preemptive_set(box))
+
+    def get_preemptive_set(self, lst):
+        lst = [item for item in lst if isinstance(item, set)]
+        lst = sorted(lst, key=lambda x:len(x), reverse=True)
+        while len(lst) != 0:
+            digit_set = lst.pop(0)
+            res = [digit_set]
+            m = len(digit_set)
+            count = 1
+            for item in lst:
+                if item.issubset(digit_set):
+                    count += 1
+                    res.append(item)
+            if m == count:
+                return digit_set
+        return None
+
+    def isValid(self, grids):
+        # check row
+        for i in range(9):
+            row = grids[i]
+            row = [item for item in row if isinstance(item, int)]
+            if set(row) != set(range(1,10)):
+                return False
+        # check column
+        for i in range(9):
+            col = []
+            for j in range(9): 
+                col.append(grids[j][i])
+            col = [item for item in col if isinstance(item, int)]
+            if set(col) != set(range(1,10)):
+                return False
+        # check box
+        for i in range(3):
+            for j in range(3):
+                start_row = i*3
+                start_col = j*3
+                box = self.get_box(grids, start_row, start_col)
+                box = [item for item in box if isinstance(item, int)]
+                if set(box) != set(range(1,10)):
+                    return False
+        return True
+
+
+
+Sudoku("./test/sudoku_4.txt").worked_tex_output()
+lst =  [{2, 4, 6, 7, 8}, 3, 9, 5, {2, 4, 6, 7}, {2, 4, 6, 7}, {1, 6}, {8, 1, 2}, {1, 2, 6}]
+
+def get_preemptive_set(lst):
+    lst = [item for item in lst if isinstance(item, set)]
+    lst = sorted(lst, key=lambda x:len(x), reverse=True)
+    while len(lst) != 0:
+        digit_set = lst.pop(0)
+        res = [digit_set]
+        m = len(digit_set)
+        count = 1
+        for item in lst:
+            if item.issubset(digit_set):
+                count += 1
+                res.append(item)
+        if m == count:
+            return digit_set
+    return []
+
+
+get_preemptive_set(lst)
