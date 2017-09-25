@@ -1,0 +1,22 @@
+{"birds": 
+	[
+		{"name": "Tweety", "mass": 0.5, "x0": 10, "y0": 12, "radius":9, "dx": 4.2, "dy": 5.1},
+		{"name": "Hawk", "mass": 10.0, "x0": 100, "y0": 800, "radius":20, "dx": 8, "dy": -6},
+		{"name": "Eddie", "mass": 15, "x0": 200, "y0": 300, "radius":19, "dx": 3.3, "dy": 5.5},
+		{"name": "Super Chicken", "mass": 8, "x0": 400, "y0": 90, "radius":19, "dx": 8, "dy": 8.2},
+		{"name": "Humming", "mass": 0.1, "x0": 80, "y0": 400, "radius":6.1, "dx": 4.3, "dy": 4.3}
+	]
+,
+ "pigs":
+        [
+		{"name": "Wilbur", "xc": 530, "yc": 850, "radius": 25},
+		{"name": "Clarence", "xc": 700, "yc": 400, "radius": 33},
+		{"name": "Noel", "xc": 600, "yc": 468, "radius": 29}
+	]
+,
+ "barriers":
+	[
+		{"name": "Gingerbread", "strength": 250, "xc": 300, "yc": 75, "radius": 20},
+		{"name": "Picket", "strength": 75, "xc": 250, "yc": 300, "radius": 30}
+	]
+ }

@@ -1,0 +1,16 @@
+{"birds": 
+	[
+		{"name": "Tweetie", "mass": 0.5, "x0": 72, "y0": 553, "radius":10, "dx": -8, "dy": -6},
+		{"name": "Fred", "mass": 5, "x0": 50, "y0": 40, "radius":25, "dx": 5, "dy": 9},
+		{"name": "Big-Bird", "mass": 30, "x0": 41, "y0": 902, "radius":35, "dx": 2, "dy": -10},
+		{"name": "Sam", "mass": 12, "x0": 600, "y0": 50, "radius":30, "dx": 13, "dy": 6}
+	]
+,
+ "pigs":[]
+,
+ "barriers":
+	[
+		{"name": "Gingerbread", "strength": 250, "xc": 300, "yc": 25, "radius": 20},
+		{"name": "Picket", "strength": 75, "xc": 250, "yc": 300, "radius": 30}
+	]
+ }

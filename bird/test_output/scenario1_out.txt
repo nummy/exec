@@ -1,0 +1,17 @@
+Enter the name of the data file => test_input/scenario1.json
+test_input/scenario1.json
+
+There are 4 birds:
+    Tweetie: (72.0,553.0)
+    Fred: (50.0,40.0)
+    Big-Bird: (41.0,902.0)
+    Sam: (600.0,50.0)
+
+There are 0 pigs:
+
+There are 2 barriers:
+    Gingerbread: (300.0,25.0)
+    Picket: (250.0,300.0)
+
+Time 0: All pigs are popped. The birds win!
+
