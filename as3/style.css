@@ -1,0 +1,64 @@
+div.main{
+	border:1px solid #eee;
+	margin: 0 auto;
+	width:80%;
+	height:500px;
+}
+
+
+div.header{
+	padding:5px 15px;
+	border:1px solid #eee;
+}
+
+div.info{
+	text-align: right;
+}
+
+div.info > span{
+	margin-left:20px;
+}
+
+div.canvas{
+	height:350px;
+	border-bottom: solid 1px #eee;
+	text-align: center;
+}
+
+#footer{
+	padding:7px;
+	text-align: center;
+}
+
+#footer > button{
+	margin-left:20px;
+}
+
+#msg{
+	text-align: middle;
+}
+
+#prompt{
+	padding:12px;
+	padding-top:150px;
+}
+label > input{
+	margin-left:8px;
+}
+
+#msg{
+	padding:15px;
+	color:#f00;
+}
+
+#dice{
+	padding-top:100px;
+}
+
+img{
+	margin-left:5px;
+}
+
+#result{
+	padding-top:50px;
+}

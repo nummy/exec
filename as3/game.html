@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dice Game</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="main">
+		<div class="header">
+			<h2>Game of Chance</h2>
+			<div class="info">
+				<span>Stage:</span>
+				<em id="stage"> Setup</em>
+				<span>Balance:</span>
+				<em id="balance">0</em>
+				<span>Round:</span>
+				<em id="round">0</em>
+				<span>Point:</span>
+				<em id="point">0</em>
+			</div>
+		</div>
+		<div class="canvas">
+			<div id="msg">
+				
+			</div>
+			<div id="prompt" style="display:none">
+				<label>Please input the number of dice:<input type="number" name="number" id="num"></label>
+			</div>
+			<div id="dice" style="display: none">
+			</div>
+			<div id="result" style="display: none">
+				<p>the number of rounds played:  <span id="roundRes">0</span></p>
+				<p>the balance of points: <span id="balanceRes">0</span></p>
+				<p>the average number of points:  <span id="avg">0</span></p>
+			</div>
+		</div>
+		<div id="footer">
+			<button id="play">Play</button>
+			<button id="continue" style="display: none">Continue</button>
+			<button id="end" style="display: none">stop</button>
+			<button id="confirm" style="display: none">Confirm</button>
+		</div>
+	</div>
+	<script type="text/javascript" src="game.js"></script>
+</body>
+</html>

@@ -324,7 +324,6 @@ class Sudoku(object):
         fp.write(output)
 
 
-
     def worked_tex_output(self):
         """
         outputs some Latex code to a file, use these codes to produce a pictorial 
