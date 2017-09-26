@@ -349,7 +349,73 @@ class Sudoku(object):
         grids = self.fill_forced_cells()
         marked_grids = self.markup_grids(grids)
         visited = []
-        print(self.get_preemptive_sets(visited, marked_grids))
+        sets = self.get_preemptive_sets(visited, marked_grids)
+        while sets:
+            visited.append(sets)
+            sets, position = self.get_preemptive_sets(visited, marked_grids)
+            if sets:
+                self.cross_out(grids, marked_grids, sets, position)
+        #print(visited)
+        print(marked_grids)
+
+    def cross_out(self, grids, marked_grids,  preemptive_set, position):
+        digits = preemptive_set[0]
+        if position[0] == "R":
+            row_index = position[1]
+            for i in range(9):
+                marked_cell = marked_grids[row_index][i]
+                if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+                    marked_grids[row_index][i] = marked_cell - digits
+                    if len(marked_grids[row_index][i]) == 1:
+                        elem = marked_grids[row_index][i].pop()
+                        marked_grids[row_index][i] = elem
+                        grids[row_index][i] = elem
+                        print(elem)
+                        self.cross_out_by_digit(grids, marked_grids, elem, row_index, i)
+
+        elif position[0] == "C":
+            col_index = position[1]
+            for i in range(9):
+                marked_cell = marked_grids[i][col_index]
+                if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+                    marked_grids[i][col_index] = marked_cell - digits
+                    if len(marked_grids[i][col_index]) == 1:
+                        elem = marked_grids[i][col_index].pop()
+                        marked_grids[i][col_index] = elem
+                        grids[i][col_index] = elem
+                        print(elem)
+                        self.cross_out_by_digit(grids, marked_grids, elem, i, col_index)
+        else:
+            start_row = position[1]
+            start_col = position[2]
+            for i in range(3):
+                for j in range(3):
+                    marked_cell = marked_grids[start_row+i][start_col+j]
+                    if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+                        marked_grids[start_row+i][start_col+j] = marked_cell - digits
+                        if len(marked_grids[start_row+i][start_col+j]) == 1:
+                            elem = marked_grids[start_row+i][start_col+j].pop()
+                            marked_grids[start_row+i][start_col+j] = elem
+                            grids[start_row+i][start_col+j] = elem
+                            print(elem)
+                            self.cross_out_by_digit(grids, marked_grids, elem, start_row+i, start_col+j)
+
+    def cross_out_by_digit(self, grids,marked_grids, digit, row, col):
+        for i in range(9):
+            marked_cell = marked_grids[row][i]
+            if isinstance(marked_cell, set) and digit in marked_cell:
+                marked_cell.remove(digit)
+            marked_cell = marked_grids[i][col]
+            if isinstance(marked_cell, set) and digit in marked_cell:
+                marked_cell.remove(digit)
+        for i in range(3):
+            for j in range(3):
+                print(row)
+                print(col)
+                marked_cell = marked_grids[row//3+i][col//3+j]
+                if isinstance(marked_cell, set) and digit in marked_cell:
+                    marked_cell.remove(digit)
+
 
 
     def get_preemptive_sets(self,visited, grids):
@@ -360,7 +426,8 @@ class Sudoku(object):
                 row.append((item, (i, index)))
             data = self.get_preemptive_set(row)
             if data and data not in visited:
-                return data
+                position = "R", i
+                return data, position
         # check col
         for i in range(9):
             col = []
@@ -368,7 +435,8 @@ class Sudoku(object):
                 col.append((grids[j][i], (j, i)))
             data = self.get_preemptive_set(col)
             if data and data not in visited:
-                return data
+                position = "C", i
+                return data, position
         # check box
         for i in range(3):
             for j in range(3):
@@ -377,8 +445,9 @@ class Sudoku(object):
                 box = self.get_box_with_position(grids, start_row, start_col)
                 data = self.get_preemptive_set(box)
                 if data and data not in visited:
-                    return data
-        return None
+                    position = "B", start_row, start_col
+                    return data, position
+        return None, None
 
     def get_preemptive_set(self, lst):
         lst = [item for item in lst if isinstance(item[0], set)]
@@ -425,23 +494,3 @@ class Sudoku(object):
 
 
 Sudoku("./test/sudoku_4.txt").worked_tex_output()
-lst =  [{2, 4, 6, 7, 8}, 3, 9, 5, {2, 4, 6, 7}, {2, 4, 6, 7}, {1, 6}, {8, 1, 2}, {1, 2, 6}]
-
-def get_preemptive_set(lst):
-    lst = [item for item in lst if isinstance(item, set)]
-    lst = sorted(lst, key=lambda x:len(x), reverse=True)
-    while len(lst) != 0:
-        digit_set = lst.pop(0)
-        res = [digit_set]
-        m = len(digit_set)
-        count = 1
-        for item in lst:
-            if item.issubset(digit_set):
-                count += 1
-                res.append(item)
-        if m == count:
-            return digit_set
-    return []
-
-
-get_preemptive_set(lst)
