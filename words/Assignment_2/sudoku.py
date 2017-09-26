@@ -348,6 +348,7 @@ class Sudoku(object):
         """
         grids = self.fill_forced_cells()
         marked_grids = self.markup_grids(grids)
+        c = copy.deepcopy(grids)
         visited = []
         sets = self.get_preemptive_sets(visited, marked_grids)
         while sets:
@@ -357,6 +358,7 @@ class Sudoku(object):
                 self.cross_out(grids, marked_grids, sets, position)
         #print(visited)
         print(marked_grids)
+        print(grids==c)
 
     def cross_out(self, grids, marked_grids,  preemptive_set, position):
         digits = preemptive_set[0]
@@ -405,16 +407,27 @@ class Sudoku(object):
             marked_cell = marked_grids[row][i]
             if isinstance(marked_cell, set) and digit in marked_cell:
                 marked_cell.remove(digit)
+                if len(marked_cell) == 1:
+                    elem = marked_grids[row_index][i].pop()
+                    marked_grids[row_index][i] = elem
+                    grids[row_index][i] = elem
             marked_cell = marked_grids[i][col]
             if isinstance(marked_cell, set) and digit in marked_cell:
                 marked_cell.remove(digit)
+                if len(marked_grids[i][col]) == 1:
+                    elem = marked_grids[i][col].pop()
+                    marked_grids[i][col] = elem
+                    grids[i][col] = elem
+
         for i in range(3):
             for j in range(3):
-                print(row)
-                print(col)
                 marked_cell = marked_grids[row//3+i][col//3+j]
                 if isinstance(marked_cell, set) and digit in marked_cell:
                     marked_cell.remove(digit)
+                    if len(marked_grids[row//3+i][col//3+j]) == 1:
+                        elem = marked_grids[row//3+i][col//3+j].pop()
+                        marked_grids[row//3+i][col//3+j] = elem
+                        grids[row//3+i][col//3+j] = elem
 
 
 
