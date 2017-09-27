@@ -517,11 +517,11 @@ class Sudoku(object):
             if grids[row][i] == 0:
                 return row, i
         # get next unfilled elem in the column
-        for i in range(9):
-            for j in range(row+1, 9):
-                cell = grids[j][i]
+        for i in range(row+1, 9):
+            for j in range(9):
+                cell = grids[i][j]
                 if cell == 0:
-                    return j, i
+                    return i, j
         return None, None
 
 

@@ -61,7 +61,7 @@ class solution(object):
 
 
 grids = []
-fp = open("./test/sudoku_5.txt", "r")
+fp = open("./test/sudoku_4.txt", "r")
 lines = []
 for line in fp:
     line = line.strip()
