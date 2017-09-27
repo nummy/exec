@@ -44,6 +44,7 @@ class solution(object):
                             self.b[x][y] = 0    #回朔到上一层继续
                         else:
                             return True
+                            
 
     def start(self):
         begin = datetime.datetime.now()

@@ -130,7 +130,9 @@ userXNN = userSortedDistances[0][0]
 # Example: [('Slightly Stoopid', 2.5), ('Blues Traveler', 3.0), ('Phoenix', 4.0)]
 userXRecos = []
 # <<<<< (4) YOUR CODE HERE >>>>>
-userXRecos =  songData3[userXNN].items()
+for k, v in songData3[userXNN].items():
+    if k not in userXRatings:
+        userXRecos.append((k,v))
 
 
 # sort list of tuples by highest rating to lowest rating.
