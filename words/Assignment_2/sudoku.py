@@ -362,14 +362,20 @@ class Sudoku(object):
                         grids[cell[0]][cell[1]] = digit
                         self.cross_out_by_digit(grids, marked_grids, digit,cell[0], cell[1])
                     forced_cells = self.get_forced_cells(grids)
+        print(visited)
         return grids
 
     def worked_tex_output(self):
         grids = self.fill_forced_cells(self.grids)
         marked_grids = self.markup_grids(grids)
         worked_grids = self.workout()
-        print(marked_grids)
+        self.pretty_print()
         print(worked_grids)
+
+    def pretty_print(self):
+        for row in self.grids:
+            print(row)
+        print()
 
     def cross_out(self, grids, marked_grids,  preemptive_set, position):
         digits = preemptive_set[0]

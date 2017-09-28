@@ -110,6 +110,7 @@ for user in users:
         distance = euclidean(userXRatings, otherRatings)
         userDistances.append((user, distance))
 
+print(userDistances)
 
 # sort list of tuples by lowest distance to highest distance.
 # assign sorted list to variable userSortedDistances.
@@ -117,13 +118,14 @@ for user in users:
 userSortedDistances = []
 # <<<<< (2) YOUR CODE HERE >>>>>
 userSortedDistances = sorted(userDistances, key=lambda x:x[1])
-
+print(userSortedDistances)
 # userX's NN is the user at the 0th position of the sorted list.
 # assign NN to userXNN.
 # Example: 'Veronica'
 userXNN = ""
 # <<<<< (3) YOUR CODE HERE >>>>>
 userXNN = userSortedDistances[0][0]
+print(userXNN)
 
 # recos for userX will include albums rated by userXNN, not already rated by userX.
 # assign list of (album, rating) tuples to variable userXRecos.
@@ -133,6 +135,7 @@ userXRecos = []
 for k, v in songData3[userXNN].items():
     if k not in userXRatings:
         userXRecos.append((k,v))
+print(userXRecos)
 
 
 # sort list of tuples by highest rating to lowest rating.
