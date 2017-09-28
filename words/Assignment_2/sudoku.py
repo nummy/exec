@@ -348,6 +348,7 @@ class Sudoku(object):
         has been applied.
         """
         grids = self.fill_forced_cells(self.grids)
+        c = copy.deepcopy(grids)
         marked_grids = self.markup_grids(grids)
         visited = []
         sets = self.get_preemptive_sets(visited, marked_grids)
@@ -362,18 +363,17 @@ class Sudoku(object):
                         grids[cell[0]][cell[1]] = digit
                         self.cross_out_by_digit(grids, marked_grids, digit,cell[0], cell[1])
                     forced_cells = self.get_forced_cells(grids)
-        print(visited)
+        print(c==grids)
+        self.pretty_print(grids)
         return grids
 
     def worked_tex_output(self):
         grids = self.fill_forced_cells(self.grids)
         marked_grids = self.markup_grids(grids)
         worked_grids = self.workout()
-        self.pretty_print()
-        print(worked_grids)
 
-    def pretty_print(self):
-        for row in self.grids:
+    def pretty_print(self, grids):
+        for row in grids:
             print(row)
         print()
 
@@ -532,4 +532,4 @@ class Sudoku(object):
 
 
 
-Sudoku("./test/sudoku_3.txt").worked_tex_output()
+Sudoku("./test/sudoku_4.txt").worked_tex_output()
