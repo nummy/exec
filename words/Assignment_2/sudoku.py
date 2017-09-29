@@ -1,6 +1,7 @@
 from collections import Counter
 import copy
 
+
 class SudokuError(Exception):
     pass
 
@@ -30,11 +31,14 @@ FOOTER = r'''\end{tabular}
 \end{document}
 '''
 
+
 class Sudoku(object):
+
     def __init__(self, filename):
         self.filename = filename
         self.name = filename.replace(".txt", "")
         self.grids = []
+        self.num = 0
         fp = open(filename, "r")
         lines = []
         for line in fp:
@@ -54,7 +58,6 @@ class Sudoku(object):
             arr = list(line)
             arr = [int(i) for i in arr]
             self.grids.append(arr)
-
 
     def preassess(self):
         """
@@ -78,9 +81,9 @@ class Sudoku(object):
         # check boxes
         for i in range(3):
             for j in range(3):
-                start_row = i*3
-                start_col = j*3
-                box  = []
+                start_row = i * 3
+                start_col = j * 3
+                box = []
                 for m in range(3):
                     for n in range(3):
                         row = start_row + m
@@ -109,11 +112,11 @@ class Sudoku(object):
         """
         output = HEADER
         for i in range(9):
-            output += "% Line {}\n".format(i+1)
+            output += "% Line {}\n".format(i + 1)
             arr = self.fill_digit(self.grids[i])
             output += " ".join(arr[:3]) + "\n"
             output += " ".join(arr[3:6]) + "\n"
-            if i%3 == 2:
+            if i % 3 == 2:
                 output += " ".join(arr[6:9]) + "\\hline\n"
             else:
                 output += " ".join(arr[6:9]) + "\n"
@@ -131,12 +134,12 @@ class Sudoku(object):
         for row in grids:
             c.update(row)
         data = list(c.items())
-        data = [item[0] for item in data if item[0]!=0]
+        data = [item[0] for item in data if item[0] != 0]
         return data
 
     def get_box(self, grids, start_row, start_col):
         """get the box by the position oof first digit in the box"""
-        box  = []
+        box = []
         for m in range(3):
             row = start_row + m
             for n in range(3):
@@ -146,7 +149,7 @@ class Sudoku(object):
 
     def get_box_with_position(self, grids, start_row, start_col):
         """get the box by the position oof first digit in the box"""
-        box  = []
+        box = []
         for m in range(3):
             row = start_row + m
             for n in range(3):
@@ -162,20 +165,21 @@ class Sudoku(object):
             starts = []  # store the positon of the start elem in the box, the digit is not in the box
             for i in range(3):
                 for j in range(3):
-                    start_row = i*3
-                    start_col = j*3
+                    start_row = i * 3
+                    start_col = j * 3
                     box = self.get_box(grids, start_row, start_col)
                     if digit not in box:
                         starts.append((start_row, start_col))
             for start in starts:
-                entry_cells = self.get_entry_cell(grids, start[0], start[1], digit)
+                entry_cells = self.get_entry_cell(
+                    grids, start[0], start[1], digit)
                 if len(entry_cells) == 1:
                     forced_cells.append([entry_cells[0], digit])
         return forced_cells
 
     def get_empty_cells(self, grids, start_row, start_col):
         """Get the empty cells for the box"""
-        empty_cells = []  # store the empty cell position in the box 
+        empty_cells = []  # store the empty cell position in the box
         for i in range(3):
             row = start_row + i
             for j in range(3):
@@ -205,9 +209,8 @@ class Sudoku(object):
             else:
                 res.append(cell)
         return res
-                
 
-    def get_digit_position(self,grids, digit):
+    def get_digit_position(self, grids, digit):
         """Get the positions of the digits in cells"""
         positions = []
         for i in range(9):
@@ -222,6 +225,8 @@ class Sudoku(object):
         while len(forced_cells) > 0:
             for cell, digit in forced_cells:
                 grids[cell[0]][cell[1]] = digit
+                self.num += 1
+                print("fill: ", digit, self.num)
             forced_cells = self.get_forced_cells(grids)
         return grids
 
@@ -233,11 +238,11 @@ class Sudoku(object):
         grids = self.fill_forced_cells(self.grids)
         output = HEADER
         for i in range(9):
-            output += "% Line {}\n".format(i+1)
+            output += "% Line {}\n".format(i + 1)
             arr = self.fill_digit(grids[i])
             output += " ".join(arr[:3]) + "\n"
             output += " ".join(arr[3:6]) + "\n"
-            if i%3 == 2:
+            if i % 3 == 2:
                 output += " ".join(arr[6:9]) + "\\hline\n"
             else:
                 output += " ".join(arr[6:9]) + "\n"
@@ -249,11 +254,9 @@ class Sudoku(object):
         fp = open(filename, "w")
         fp.write(output)
 
-    
-
     def get_marked_digits(self, grids, row, col):
-        start_row = (row // 3)*3
-        start_col = (col // 3)*3
+        start_row = (row // 3) * 3
+        start_col = (col // 3) * 3
         box = self.get_box(grids, start_row, start_col)
         box_set = set()
         for item in box:
@@ -266,7 +269,7 @@ class Sudoku(object):
         col_set = set()
         for i in range(9):
             col_set.add(grids[i][col])
-        return set(range(1,10)) - box_set -row_set - col_set
+        return set(range(1, 10)) - box_set - row_set - col_set
 
     def fill_marked_digit(self, row):
         """Fill digit in for tex output"""
@@ -298,7 +301,6 @@ class Sudoku(object):
                 RB.append(str(digit))
         return " ".join(LT), " ".join(RT), " ".join(LB), " ".join(RB)
 
-
     def markup_grids(self, grids):
         marked_grids = []
         for i in range(9):
@@ -312,7 +314,6 @@ class Sudoku(object):
                     marked_grids[i].append(digit)
         return marked_grids
 
-
     def marked_tex_output(self):
         """
         outputs some Latex code to a file, use these codes to to produce a pictorial 
@@ -323,11 +324,11 @@ class Sudoku(object):
         marked_grids = self.markup_grids(grids)
         output = HEADER
         for i in range(9):
-            output += "% Line {}\n".format(i+1)
+            output += "% Line {}\n".format(i + 1)
             arr = self.fill_marked_digit(marked_grids[i])
             output += " ".join(arr[:3]) + "\n"
             output += " ".join(arr[3:6]) + "\n"
-            if i%3 == 2:
+            if i % 3 == 2:
                 output += " ".join(arr[6:9]) + "\\hline\n"
             else:
                 output += " ".join(arr[6:9]) + "\n"
@@ -337,8 +338,6 @@ class Sudoku(object):
         filename = self.name + "_marked1.tex"
         fp = open(filename, "w")
         fp.write(output)
-
-
 
     def workout(self):
         """
@@ -361,9 +360,11 @@ class Sudoku(object):
                 while len(forced_cells) > 0:
                     for cell, digit in forced_cells:
                         grids[cell[0]][cell[1]] = digit
-                        self.cross_out_by_digit(grids, marked_grids, digit,cell[0], cell[1])
+                        self.num += 1
+                        print("fill: ", digit, self.num)
+                        self.cross_out_by_digit(
+                            grids, marked_grids, digit, cell[0], cell[1])
                     forced_cells = self.get_forced_cells(grids)
-        print(c==grids)
         self.pretty_print(grids)
         return grids
 
@@ -379,44 +380,104 @@ class Sudoku(object):
 
     def cross_out(self, grids, marked_grids,  preemptive_set, position):
         digits = preemptive_set[0]
+        boxes = [{1, 2, 3}, {4, 5, 6}, {7, 8, 9},
+                 {1, 2}, {2, 3}, {1, 3},
+                 {4, 5}, {5, 6}, {4, 6},
+                 {7, 8}, {8, 9}, {7, 9}]
+        marks = preemptive_set[0]
+        pos = preemptive_set[1]
         if position[0] == "R":
             row_index = position[1]
-            for i in range(9):
-                marked_cell = marked_grids[row_index][i]
-                if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
-                    marked_grids[row_index][i] = marked_cell - digits
-                    if len(marked_grids[row_index][i]) == 1:
-                        elem = marked_grids[row_index][i].pop()
-                        marked_grids[row_index][i] = elem
-                        grids[row_index][i] = elem
-                        self.cross_out_by_digit(grids, marked_grids, elem, row_index, i)
+            self.cross_out_row(grids, marked_grids, row_index, digits)
+            if len(marks) <= 3:
+                columns = set()
+                for p in pos:
+                    columns.add(p[1])
+                if columns in boxes:
+                    # they are in the same box, cross out other digit in the
+                    start_row = (list(columns)[0]//3)*3
+                    start_col = (row_index//3)*3
+                    #self.cross_out_box(grids, marked_grids, start_row, start_col, digits)
 
         elif position[0] == "C":
             col_index = position[1]
-            for i in range(9):
-                marked_cell = marked_grids[i][col_index]
-                if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
-                    marked_grids[i][col_index] = marked_cell - digits
-                    if len(marked_grids[i][col_index]) == 1:
-                        elem = marked_grids[i][col_index].pop()
-                        marked_grids[i][col_index] = elem
-                        grids[i][col_index] = elem
-                        self.cross_out_by_digit(grids, marked_grids, elem, i, col_index)
+            self.cross_out_col(grids, marked_grids, col_index, digits)
+            if len(marks) <= 3:
+                # in the same box
+                rows = set()
+                for p in pos:
+                    rows.add(p[0])
+                if rows in boxes:
+                    start_row = (list(rows)[0]//3)*3
+                    start_col = (col_index//3)*3
+                    #self.cross_out_box(grids, marked_grids, start_row, start_col, digits)
         else:
             start_row = position[1]
             start_col = position[2]
-            for i in range(3):
-                for j in range(3):
-                    marked_cell = marked_grids[start_row+i][start_col+j]
-                    if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
-                        marked_grids[start_row+i][start_col+j] = marked_cell - digits
-                        if len(marked_grids[start_row+i][start_col+j]) == 1:
-                            elem = marked_grids[start_row+i][start_col+j].pop()
-                            marked_grids[start_row+i][start_col+j] = elem
-                            grids[start_row+i][start_col+j] = elem
-                            self.cross_out_by_digit(grids, marked_grids, elem, start_row+i, start_col+j)
+            print(start_row)
+            self.cross_out_box(grids, marked_grids, start_row, start_col, digits)
+            if len(marks) <= 3:
+                # check if they are in the same row or coolumn
+                # check if the are in the same row
+                rows = set()
+                cols = set()
+                for p in pos:
+                    rows.add(p[0])
+                    cols.add(p[1])
+                if len(rows) == 1:
+                    # in the same row
+                    pass
+                    #self.cross_out_row(grids, marked_grids, rows.pop(), digits)
+                if len(cols) == 1:
+                    # in the same col
+                    pass
+                    #self.cross_out_col(grids, marked_grids, cols.pop(), digits)
 
-    def cross_out_by_digit(self, grids,marked_grids, digit, row, col):
+    def cross_out_col(self, grids, marked_grids, col_index, digits):
+        for i in range(9):
+            marked_cell = marked_grids[i][col_index]
+            if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+                marked_grids[i][col_index] = marked_cell - digits
+                if len(marked_grids[i][col_index]) == 1:
+                    elem = marked_grids[i][col_index].pop()
+                    marked_grids[i][col_index] = elem
+                    grids[i][col_index] = elem
+                    self.num += 1
+                    print("fill: ", elem, self.num)
+                    self.cross_out_by_digit(
+                        grids, marked_grids, elem, i, col_index)
+
+    def cross_out_row(self, grids, marked_grids, row_index, digits):
+        for i in range(9):
+            marked_cell = marked_grids[row_index][i]
+            if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+                marked_grids[row_index][i] = marked_cell - digits
+                if len(marked_grids[row_index][i]) == 1:
+                    elem = marked_grids[row_index][i].pop()
+                    marked_grids[row_index][i] = elem
+                    grids[row_index][i] = elem
+                    self.num += 1
+                    print("fill: ", elem, self.num)
+                    self.cross_out_by_digit(
+                        grids, marked_grids, elem, row_index, i)
+
+    def cross_out_box(self, grids, marked_grids, start_row, start_col, digits):
+        for i in range(3):
+            for j in range(3):
+                marked_cell = marked_grids[start_row + i][start_col + j]
+                if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+                    marked_grids[start_row + i][start_col +
+                                                j] = marked_cell - digits
+                    if len(marked_grids[start_row + i][start_col + j]) == 1:
+                        elem = marked_grids[start_row + i][start_col + j].pop()
+                        marked_grids[start_row + i][start_col + j] = elem
+                        grids[start_row + i][start_col + j] = elem
+                        self.num += 1
+                        print("fill: ", elem, self.num)
+                        self.cross_out_by_digit(
+                            grids, marked_grids, elem, start_row + i, start_col + j)
+
+    def cross_out_by_digit(self, grids, marked_grids, digit, row, col):
         for i in range(9):
             marked_cell = marked_grids[row][i]
             if isinstance(marked_cell, set) and digit in marked_cell:
@@ -425,6 +486,8 @@ class Sudoku(object):
                     elem = marked_grids[row][i].pop()
                     marked_grids[row][i] = elem
                     grids[row][i] = elem
+                    self.num += 1
+                    print("fill: ", elem, self.num)
             marked_cell = marked_grids[i][col]
             if isinstance(marked_cell, set) and digit in marked_cell:
                 marked_cell.remove(digit)
@@ -432,10 +495,12 @@ class Sudoku(object):
                     elem = marked_grids[i][col].pop()
                     marked_grids[i][col] = elem
                     grids[i][col] = elem
+                    self.num += 1
+                    print("fill: ", elem, self.num)
         for i in range(3):
             for j in range(3):
-                row = (row//3)*3+i
-                col = (col//3)*3+j
+                row = (row // 3) * 3 + i
+                col = (col // 3) * 3 + j
                 marked_cell = marked_grids[row][col]
                 if isinstance(marked_cell, set) and digit in marked_cell:
                     marked_cell.remove(digit)
@@ -443,12 +508,13 @@ class Sudoku(object):
                         elem = marked_grids[row][col].pop()
                         marked_grids[row][col] = elem
                         grids[row][col] = elem
+                        self.num += 1
+                        print("fill: ", elem, self.num)
 
-
-    def get_preemptive_sets(self,visited, grids):
+    def get_preemptive_sets(self, visited, grids):
         # check row
         for i in range(9):
-            row  = []
+            row = []
             for index, item in enumerate(grids[i]):
                 row.append((item, (i, index)))
             data = self.get_preemptive_set(row)
@@ -471,8 +537,8 @@ class Sudoku(object):
         # check box
         for i in range(3):
             for j in range(3):
-                start_row = i*3
-                start_col = j*3
+                start_row = i * 3
+                start_col = j * 3
                 box = self.get_box_with_position(grids, start_row, start_col)
                 data = self.get_preemptive_set(box)
                 if data:
@@ -484,7 +550,7 @@ class Sudoku(object):
 
     def get_preemptive_set(self, lst):
         lst = [item for item in lst if isinstance(item[0], set)]
-        lst = sorted(lst, key=lambda x:len(x[0]), reverse=True)
+        lst = sorted(lst, key=lambda x: len(x[0]), reverse=True)
         result = []
         while len(lst) != 0:
             digit_set, position = lst.pop(0)
@@ -504,32 +570,31 @@ class Sudoku(object):
         return result
 
     def isValid(self, grids):
-        # check if the game over 
+        # check if the game over
         # check row
         for i in range(9):
             row = grids[i]
             row = [item for item in row if isinstance(item, int)]
-            if set(row) != set(range(1,10)):
+            if set(row) != set(range(1, 10)):
                 return False
         # check column
         for i in range(9):
             col = []
-            for j in range(9): 
+            for j in range(9):
                 col.append(grids[j][i])
             col = [item for item in col if isinstance(item, int)]
-            if set(col) != set(range(1,10)):
+            if set(col) != set(range(1, 10)):
                 return False
         # check box
         for i in range(3):
             for j in range(3):
-                start_row = i*3
-                start_col = j*3
+                start_row = i * 3
+                start_col = j * 3
                 box = self.get_box(grids, start_row, start_col)
                 box = [item for item in box if isinstance(item, int)]
-                if set(box) != set(range(1,10)):
+                if set(box) != set(range(1, 10)):
                     return False
         return True
-
 
 
 Sudoku("./test/sudoku_4.txt").worked_tex_output()
