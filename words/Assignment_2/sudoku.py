@@ -367,15 +367,33 @@ class Sudoku(object):
         self.pretty_print(grids)
         return grids
 
+    def fill_worked_digit(self, m_row, c_row):
+        arr = []
+        for i in range(9):
+            elem = m_row[i]
+            elem_c = c_row[i]
+            line = ""
+            if isinstance(elem, set):
+                LT, RT, LB, RB = self.seperate_digits(elem)
+                line = r"\N{%s}{%s}{%s}{%s}{} &" % (LT, RT, LB, RB)
+            else:
+                line = r"\N{}{}{}{}{" + str(elem) + "} &"
+            for item in list(elem_c):
+                line = line.replace(str(item), r"\cancel{" + str(item) + "}")
+            arr.append(line)
+        arr[-1] = arr[-1].replace("&", "\\\\ \hline")
+        return arr
+
     def worked_tex_output(self):
-        cancel_box = self.init_cancel_box()
+        cancel_grids = self.init_cancel_box()
         grids = self.fill_forced_cells(self.grids)
         marked_grids = self.markup_grids(grids)
-        worked_grids = self.workout(grids, marked_grids, cancel_box)
+        temp = copy.deepcopy(marked_grids)
+        worked_grids = self.workout(grids, temp, cancel_grids)
         output = HEADER
         for i in range(9):
             output += "% Line {}\n".format(i + 1)
-            arr = self.fill_marked_digit(marked_grids[i])
+            arr = self.fill_worked_digit(marked_grids[i], cancel_grids[i])
             output += " ".join(arr[:3]) + "\n"
             output += " ".join(arr[3:6]) + "\n"
             if i % 3 == 2:
@@ -385,7 +403,7 @@ class Sudoku(object):
             if i != 8:
                 output += "\n"
         output += FOOTER
-        filename = self.name + "_marked1.tex"
+        filename = self.name + "_worked1.tex"
         fp = open(filename, "w")
         fp.write(output)
 
