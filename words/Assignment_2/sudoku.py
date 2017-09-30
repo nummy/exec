@@ -372,8 +372,22 @@ class Sudoku(object):
         grids = self.fill_forced_cells(self.grids)
         marked_grids = self.markup_grids(grids)
         worked_grids = self.workout(grids, marked_grids, cancel_box)
-        print(cancel_box)
-        print(self.isValid(worked_grids))
+        output = HEADER
+        for i in range(9):
+            output += "% Line {}\n".format(i + 1)
+            arr = self.fill_marked_digit(marked_grids[i])
+            output += " ".join(arr[:3]) + "\n"
+            output += " ".join(arr[3:6]) + "\n"
+            if i % 3 == 2:
+                output += " ".join(arr[6:9]) + "\\hline\n"
+            else:
+                output += " ".join(arr[6:9]) + "\n"
+            if i != 8:
+                output += "\n"
+        output += FOOTER
+        filename = self.name + "_marked1.tex"
+        fp = open(filename, "w")
+        fp.write(output)
 
     def init_cancel_box(self):
         res = []
