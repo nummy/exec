@@ -226,7 +226,6 @@ class Sudoku(object):
             for cell, digit in forced_cells:
                 grids[cell[0]][cell[1]] = digit
                 self.num += 1
-                print("forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(digit, self.num, cell[0] +1, cell[1]+1))
             forced_cells = self.get_forced_cells(grids)
         return grids
 
@@ -314,6 +313,7 @@ class Sudoku(object):
                     marked_grids[i].append(digit)
         return marked_grids
 
+
     def marked_tex_output(self):
         """
         outputs some Latex code to a file, use these codes to to produce a pictorial 
@@ -339,48 +339,57 @@ class Sudoku(object):
         fp = open(filename, "w")
         fp.write(output)
 
-    def workout(self):
+    def workout(self, grids, marked_grids, cancel_box):
         """
         outputs some Latex code to a file, use these codes to produce a pictorial 
         representation of the grid to which the forced digits technique has been 
         applied, that has been marked, and to which the preemptive set technique 
         has been applied.
         """
-        grids = self.fill_forced_cells(self.grids)
-        c = copy.deepcopy(grids)
-        marked_grids = self.markup_grids(grids)
+       
         visited = []
-        sets = self.get_preemptive_sets(visited, marked_grids)
+        
+        sets, position = self.get_preemptive_sets(visited, marked_grids)
         while sets:
+            self.cross_out(grids, marked_grids, sets, position, cancel_box)
+            forced_cells = self.get_forced_cells(grids)
+            while len(forced_cells) > 0:
+                for cell, digit in forced_cells:
+                    grids[cell[0]][cell[1]] = digit
+                    marked_grids[cell[0]][cell[1]] = digit
+                    self.num += 1
+                    #print("#1 forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(digit, self.num, cell[0] +1, cell[1]+1))
+                    self.cross_out_by_digit(
+                        grids, marked_grids, digit, cell[0], cell[1], cancel_box)
+                forced_cells = self.get_forced_cells(grids)
             visited.append(sets)
             sets, position = self.get_preemptive_sets(visited, marked_grids)
-            if sets:
-                self.cross_out(grids, marked_grids, sets, position)
-                forced_cells = self.get_forced_cells(grids)
-                while len(forced_cells) > 0:
-                    for cell, digit in forced_cells:
-                        grids[cell[0]][cell[1]] = digit
-                        marked_grids[cell[0]][cell[1]] = digit
-                        self.num += 1
-                        if digit == 7:
-                            self.pretty_print(marked_grids)
-                        print("#1 forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(digit, self.num, cell[0] +1, cell[1]+1))
-                        self.cross_out_by_digit(
-                            grids, marked_grids, digit, cell[0], cell[1])
-                    forced_cells = self.get_forced_cells(grids)
         self.pretty_print(grids)
         return grids
 
     def worked_tex_output(self):
-        worked_grids = self.workout()
+        cancel_box = self.init_cancel_box()
+        grids = self.fill_forced_cells(self.grids)
+        marked_grids = self.markup_grids(grids)
+        worked_grids = self.workout(grids, marked_grids, cancel_box)
+        print(cancel_box)
         print(self.isValid(worked_grids))
+
+    def init_cancel_box(self):
+        res = []
+        for i in range(9):
+            res.append([])
+            for j in range(9):
+                res[i].append([])
+        return res
+
 
     def pretty_print(self, grids):
         for row in grids:
             print(row)
         print()
 
-    def cross_out(self, grids, marked_grids,  preemptive_set, position):
+    def cross_out(self, grids, marked_grids,  preemptive_set, position, cancel_box):
         digits = preemptive_set[0]
         boxes = [{1, 2, 3}, {4, 5, 6}, {7, 8, 9},
                  {1, 2}, {2, 3}, {1, 3},
@@ -390,20 +399,20 @@ class Sudoku(object):
         pos = preemptive_set[1]
         if position[0] == "R":
             row_index = position[1]
-            self.cross_out_row(grids, marked_grids, row_index, digits)
+            self.cross_out_row(grids, marked_grids, row_index, digits, pos, cancel_box)
             if len(marks) <= 3:
                 columns = set()
                 for p in pos:
-                    columns.add(p[1])
+                    columns.add(p[1])  # get column index
                 if columns in boxes:
                     # they are in the same box, cross out other digit in the
-                    start_row = (list(columns)[0]//3)*3
-                    start_col = (row_index//3)*3
-                    #self.cross_out_box(grids, marked_grids, start_row, start_col, digits)
+                    start_row = (row_index//3)*3
+                    start_col = (list(columns)[0]//3)*3
+                    self.cross_out_box(grids, marked_grids, start_row, start_col, digits, pos, cancel_box)
 
         elif position[0] == "C":
             col_index = position[1]
-            self.cross_out_col(grids, marked_grids, col_index, digits)
+            self.cross_out_col(grids, marked_grids, col_index, digits, pos, cancel_box)
             if len(marks) <= 3:
                 # in the same box
                 rows = set()
@@ -412,11 +421,11 @@ class Sudoku(object):
                 if rows in boxes:
                     start_row = (list(rows)[0]//3)*3
                     start_col = (col_index//3)*3
-                    #self.cross_out_box(grids, marked_grids, start_row, start_col, digits)
+                    self.cross_out_box(grids, marked_grids, start_row, start_col, digits, pos, cancel_box)
         else:
             start_row = position[1]
             start_col = position[2]
-            self.cross_out_box(grids, marked_grids, start_row, start_col, digits)
+            self.cross_out_box(grids, marked_grids, start_row, start_col, digits, pos, cancel_box)
             if len(marks) <= 3:
                 # check if they are in the same row or coolumn
                 # check if the are in the same row
@@ -427,46 +436,50 @@ class Sudoku(object):
                     cols.add(p[1])
                 if len(rows) == 1:
                     # in the same row
-                    pass
-                    #self.cross_out_row(grids, marked_grids, rows.pop(), digits)
+                    #pass
+                    self.cross_out_row(grids, marked_grids, rows.pop(), digits, pos, cancel_box)
                 if len(cols) == 1:
                     # in the same col
-                    pass
-                    #self.cross_out_col(grids, marked_grids, cols.pop(), digits)
+                    #pass
+                    self.cross_out_col(grids, marked_grids, cols.pop(), digits, pos, cancel_box)
 
-    def cross_out_col(self, grids, marked_grids, col_index, digits):
+    def cross_out_col(self, grids, marked_grids, col_index, digits, pos_lst, cancel_box):
         for i in range(9):
             marked_cell = marked_grids[i][col_index]
-            if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+            position = (i, col_index)
+            if isinstance(marked_cell, set) and position not in pos_lst:
+                cancel_box[i][col_index] = cancel_box[i][col_index] + list(marked_cell&digits)
                 marked_grids[i][col_index] = marked_cell - digits
                 if len(marked_grids[i][col_index]) == 1:
                     elem = marked_grids[i][col_index].pop()
                     marked_grids[i][col_index] = elem
                     grids[i][col_index] = elem
                     self.num += 1
-                    print("#2 forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(elem, self.num, i +1, col_index+1))
                     self.cross_out_by_digit(
-                        grids, marked_grids, elem, i, col_index)
+                        grids, marked_grids, elem, i, col_index, cancel_box)
 
-    def cross_out_row(self, grids, marked_grids, row_index, digits):
+    def cross_out_row(self, grids, marked_grids, row_index, digits, pos_lst, cancel_box):
         for i in range(9):
             marked_cell = marked_grids[row_index][i]
-            if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+            position = (row_index, i)
+            if isinstance(marked_cell, set) and position not in pos_lst:
+                cancel_box[row_index][i] = cancel_box[row_index][i]  + list(marked_cell&digits)
                 marked_grids[row_index][i] = marked_cell - digits
                 if len(marked_grids[row_index][i]) == 1:
                     elem = marked_grids[row_index][i].pop()
                     marked_grids[row_index][i] = elem
                     grids[row_index][i] = elem
                     self.num += 1
-                    print("#3 forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(elem, self.num, row_index+1, i+1))
                     self.cross_out_by_digit(
-                        grids, marked_grids, elem, row_index, i)
+                        grids, marked_grids, elem, row_index, i, cancel_box)
 
-    def cross_out_box(self, grids, marked_grids, start_row, start_col, digits):
+    def cross_out_box(self, grids, marked_grids, start_row, start_col, digits, pos_list, cancel_box):
         for i in range(3):
             for j in range(3):
+                position = (start_row+i, start_col+j)
                 marked_cell = marked_grids[start_row + i][start_col + j]
-                if isinstance(marked_cell, set) and not marked_cell.issubset(digits):
+                if isinstance(marked_cell, set) and position not in pos_list:
+                    cancel_box[start_row+i][start_col+j] = cancel_box[start_row+i][start_col+j]  + list(marked_cell&digits)
                     marked_grids[start_row + i][start_col +
                                                 j] = marked_cell - digits
                     if len(marked_grids[start_row + i][start_col + j]) == 1:
@@ -474,44 +487,43 @@ class Sudoku(object):
                         marked_grids[start_row + i][start_col + j] = elem
                         grids[start_row + i][start_col + j] = elem
                         self.num += 1
-                        print("#4 forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(elem, self.num, start_row +i+1, start_col+j+1))
                         self.cross_out_by_digit(
-                            grids, marked_grids, elem, start_row + i, start_col + j)
+                            grids, marked_grids, elem, start_row + i, start_col + j, cancel_box)
 
-    def cross_out_by_digit(self, grids, marked_grids, digit, row, col):
+    def cross_out_by_digit(self, grids, marked_grids, digit, row, col,cancel_box):
         # cross each row and each column
         for i in range(9):
             marked_cell = marked_grids[row][i]
             if isinstance(marked_cell, set) and digit in marked_cell:
+                cancel_box[row][i].append(digit)
                 marked_cell.remove(digit)
                 if len(marked_cell) == 1:
                     elem = marked_grids[row][i].pop()
                     marked_grids[row][i] = elem
                     grids[row][i] = elem
                     self.num += 1
-                    print("#5 forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(elem, self.num, row +1, i+1))
             marked_cell = marked_grids[i][col]
             if isinstance(marked_cell, set) and digit in marked_cell:
                 marked_cell.remove(digit)
+                cancel_box[i][col].append(digit)
                 if len(marked_grids[i][col]) == 1:
                     elem = marked_grids[i][col].pop()
                     marked_grids[i][col] = elem
                     grids[i][col] = elem
                     self.num += 1
-                    print("#6 forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(elem, self.num, i +1, col+1))
         for i in range(3):
             for j in range(3):
                 row = (row // 3) * 3 + i
                 col = (col // 3) * 3 + j
                 marked_cell = marked_grids[row][col]
                 if isinstance(marked_cell, set) and digit in marked_cell:
+                    cancel_box[row][col].append(digit)
                     marked_cell.remove(digit)
                     if len(marked_grids[row][col]) == 1:
                         elem = marked_grids[row][col].pop()
                         marked_grids[row][col] = elem
                         grids[row][col] = elem
                         self.num += 1
-                        print("#6 forced fill: digit=%s, counter=%s, positon=(%s, %s)" %(elem, self.num, row +1, col+1))
 
 
     def get_preemptive_sets(self, visited, grids):
@@ -566,7 +578,7 @@ class Sudoku(object):
                     count += 1
                     res[1].append(position)
                     removed.append((item, position))
-            if m == count:
+            if m == count and m != 1:
                 result.append(res)
                 for item in removed:
                     lst.remove(item)
